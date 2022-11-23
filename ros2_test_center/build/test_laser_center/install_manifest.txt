@@ -1,0 +1,17 @@
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/lib/test_laser_center/sub_process
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/include/test_laser_center/sub_process.hpp
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/ament_index/resource_index/package_run_dependencies/test_laser_center
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/ament_index/resource_index/parent_prefix_path/test_laser_center
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/environment/ament_prefix_path.sh
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/environment/ament_prefix_path.dsv
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/environment/path.sh
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/environment/path.dsv
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/local_setup.bash
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/local_setup.sh
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/local_setup.zsh
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/local_setup.dsv
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/package.dsv
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/ament_index/resource_index/packages/test_laser_center
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/cmake/test_laser_centerConfig.cmake
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/cmake/test_laser_centerConfig-version.cmake
+/home/wanyel/vs_code/exact_center/ros2_test_center/install/test_laser_center/share/test_laser_center/package.xml

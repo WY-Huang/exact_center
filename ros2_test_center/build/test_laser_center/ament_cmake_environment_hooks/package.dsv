@@ -1,0 +1,4 @@
+source;share/test_laser_center/local_setup.bash
+source;share/test_laser_center/local_setup.dsv
+source;share/test_laser_center/local_setup.sh
+source;share/test_laser_center/local_setup.zsh
