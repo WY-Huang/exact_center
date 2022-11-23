@@ -26,63 +26,95 @@ void LaserCenter::topic_callback(const sensor_msgs::msg::Image msg)
     // thining_gray_centroid(cvImage);
 }
 
-void LaserCenter::gray_centroid(Mat img)
-{
-    //计时开始 
-    begin = clock();
-    
-    Mat srcimg = img;
-    Mat grayimg;
+void LaserCenter::gray_centroid(Mat srcimg)
+{ 
+    Mat pyrimg;
+    Mat gaussimg;
     // std::cout<< srcimg.channels() <<std::endl;
     // cvtColor(srcimg, grayimg, COLOR_BGR2GRAY);
     // std::cout<<"3"<<std::endl;
     // imshow("srcImg", srcimg);
 
-    GaussianBlur(srcimg, grayimg, Size(3, 3), 0);
+    //计时开始 
+    begin = clock();
+
+    pyrDown(srcimg, pyrimg);
+    // std::cout<< pyrimg.size() <<std::endl;
+    // imshow("pyrimg", pyrimg);
+
+    GaussianBlur(pyrimg, gaussimg, Size(3, 3), 0);
     gauss_time = clock();
 
     // thd_otsu = GetMatOTSU(grayimg);
-    thd_otsu = myOtsu(grayimg);
+    thd_otsu = myOtsu(gaussimg);
     otsu_time = clock();
     // imshow("grayImg", grayimg);
     // waitKey(0);
     //遍历每一列
     // float x0 = 0;
-    
-    for (int i = 0;i < grayimg.cols;i++) 
+
+    std::vector<float> pyr_coordinat;
+    std::vector<float> src_coordinat;
+    for (int i = 0;i < gaussimg.cols;i++) 
     {
         float sum_value = 0;
         float sum_valuecoor = 0;
-        std::vector<float> current_value;
-        std::vector<float> current_coordinat;
+        // std::vector<float> current_value;
+        // std::vector<float> current_coordinat;
+        
 
         // 计算单行otsu
         // thd_otsu = GetLineOTSU(grayimg, i);
         
-
-        for (int j = 0;j < grayimg.rows;j++) 
+        for (int j = 0;j < gaussimg.rows;j++) 
         {
-            float current = grayimg.at<uchar>(j, i);
+            float current = gaussimg.at<uchar>(j, i);
             //将符合阈值的点灰度值和坐标存入数组
             if (current > thd_otsu) 
             {
-                current_value.push_back(current);
-                current_coordinat.push_back(j);
+                // current_value.push_back(current);
+                // current_coordinat.push_back(j);
+
+                sum_valuecoor += current * j;
+                sum_value += current;
             }
         }
 
-        //计算灰度重心
-        for (int k = 0;k < current_value.size();k++) 
-        {
-            sum_valuecoor += current_value[k]*current_coordinat[k];
-            sum_value += current_value[k];
-        }
+        // //计算灰度重心
+        // for (int k = 0;k < current_value.size();k++) 
+        // {
+        //     sum_valuecoor += current_value[k]*current_coordinat[k];
+        //     sum_value += current_value[k];
+        // }
         float x = sum_valuecoor / sum_value;
+        pyr_coordinat.push_back(x);
+
         // x0 = x;
-        circle(srcimg, Point(i, x), 0, Scalar(0, 0, 255), -1, 8);
-        current_value.clear();
-        current_coordinat.clear();
+        // circle(pyrimg, Point(i, x), 0, Scalar(0, 0, 255), -1, 8);
+        // current_value.clear();
+        // current_coordinat.clear();
     }
+    // 扩充到原始大小
+    for (int k = 0; k < (pyr_coordinat.size() - 1); k++)
+    {
+        src_coordinat.push_back(pyr_coordinat[k] * 2);
+        src_coordinat.push_back(pyr_coordinat[k] + pyr_coordinat[k+1]); 
+        if ((k + 2) == pyr_coordinat.size())
+        {
+            src_coordinat.push_back(pyr_coordinat[k+1] * 2);
+            src_coordinat.push_back(pyr_coordinat[k+1] * 2);
+        }
+    }
+
+    // std::cout << pyr_coordinat.size() << "\t" << src_coordinat.size() << std::endl;
+    // 绘制中心线
+    for (int n = 0; n < src_coordinat.size(); n++)
+    {
+        circle(srcimg, Point(n, src_coordinat[n]), 0, Scalar(0, 0, 255), -1, 8);
+        // std::cout <<  src_coordinat[n] << std::endl;
+    }
+
+
     //计时结束
     end = clock();
     gauss_cost = double(gauss_time - begin) /1000;
@@ -100,7 +132,7 @@ void LaserCenter::gray_centroid(Mat img)
     fps = std::to_string(round(1000 / total_cost));
     std::cout << "fps: " << fps << std::endl;
     putText(srcimg, fps, cv::Point(20, 20), cv::FONT_ITALIC, 0.8, cv::Scalar(255, 255, 255));
-    imshow("srcimg", srcimg);
+    imshow("pyrimg_line", srcimg);
     waitKey(5);
 
 }
