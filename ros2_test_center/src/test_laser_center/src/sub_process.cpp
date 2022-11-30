@@ -69,8 +69,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
 
         // 计算单行otsu
         // thd_otsu = GetLineOTSU(grayimg, i);
-        float mean_value;
-		int current_j = 0;
+		int current_j1 = 0;
 		int count_j = 0;
         for (int j = 0;j < gaussimg.rows;j++) 
         {
@@ -81,17 +80,16 @@ void LaserCenter::gray_centroid(Mat srcimg)
                 // current_value.push_back(current);
                 // current_coordinat.push_back(j);
 				count_j++;
-				if (count_j<4)
+				if (count_j<2)
 				{
 					sum_valuecoor += current * j;
                 	sum_value += current;
-					current_j += j;
-					mean_value = current_j / count_j;
+					current_j1 = j;
 				}
 				else
 				{
-					// 
-					if ((float)(j-15) < mean_value)
+					// 筛选距离小于10*2个像素的点
+					if ((float)(j-10) < current_j1)
 					{
 						sum_valuecoor += current * j;
                 		sum_value += current;
@@ -118,7 +116,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
     // 扩充到原始大小
     for (int k = 0; k < (pyr_coordinat.size() - 1); k++)
     {
-        if (abs(pyr_coordinat[k+1]-pyr_coordinat[k]) < 10)
+        if (abs(pyr_coordinat[k+1]-pyr_coordinat[k]) < 8)
 		{
 			src_coordinat.push_back(pyr_coordinat[k] * 2);
         	src_coordinat.push_back(pyr_coordinat[k] + pyr_coordinat[k+1]);
