@@ -6,7 +6,7 @@
 using namespace cv;
 using namespace std;
 
-
+////////////////////////////////////////////////////////////////
 int getOTSUthread(Mat& src)
 {
 	int size = 256;
@@ -67,6 +67,7 @@ int getOTSUthread(Mat& src)
 	return thd;
 }
 
+///////////////////////////////////////////////////////////////
 //使用大津法Mat的阈值
 int GetMatOTSU(const Mat& img)
 {
@@ -137,33 +138,137 @@ int GetMatOTSU(const Mat& img)
  
   return calcval;
 }
+/////////////////////////////////////////////////////////////////////////////
+void getHistogram(Mat &src, int *dst)
+{
+	Mat hist;
+	int channels[1] = { 0 };
+	int histSize[1] = { 256 };
+	float hranges[2] = { 0, 256.0 };
+	const float *ranges[1] = { hranges };
+	calcHist(&src, 1, channels, Mat(), hist, 1, histSize, ranges);
+	//cout << hist ;
+	for (int i = 0; i < 256; i++)
+	{ 
+		float binVal = hist.at<float>(i);
+		dst[i] = int(binVal);
+	}
+}
+ 
+ // 大津阈值法3
+// int LaserCenter::myOtsu(Mat & src, Mat &dst)
+int myOtsu(Mat & src)
+{
+	
+	int th = 0;
+	const int GrayScale = 256;	//单通道图像总灰度256级
+	int pixCount[GrayScale] = { 0 };//每个灰度值所占像素个数
+	int pixSum = src.cols * src.rows;//图像总像素点
+	float pixPro[GrayScale] = { 0 };//每个灰度值所占总像素比例
+	float SumpixPro[GrayScale] = { 0 }; // 比例的和
+	float WpixPro[GrayScale] = { 0 }; //比例 * 权重
+	float SumWpixPro[GrayScale] = { 0 };//比例 * 权重 的 和
+	float w0, w1, u0tmp, u1tmp, u0, u1, deltaTmp, deltaMax = 0;
+	double start = getTickCount(); //开始时间
+	
+	getHistogram(src, pixCount);
+ 
+	double c1 = getTickCount(); 
+	//cout << "c1 >> " << (c1 - start) / getTickFrequency() << endl;//输出时间
+	for (int i = 0; i < GrayScale; i++)
+	{
+		pixPro[i] = pixCount[i] * 1.0 / pixSum;//计算每个灰度级的像素数目占整幅图像的比例  
+		WpixPro[i] = i * pixPro[i];
+		if (i == 0)
+		{
+			SumWpixPro[i] += WpixPro[i];
+			SumpixPro[i] += pixPro[i];
+		}
+		else
+		{
+			SumWpixPro[i] = WpixPro[i] + SumWpixPro[i - 1];
+			SumpixPro[i] = pixPro[i] + SumpixPro[i - 1];
+		}
+	}
+ 
+	for (int i = 0; i < GrayScale; i++)//遍历所有从0到255灰度级的阈值分割条件，测试哪一个的类间方差最大
+	{
+		w0 = w1 = u0tmp = u1tmp = u0 = u1 = deltaTmp = 0;
 
+		w0 = SumpixPro[i];
+		w1 = 1 - w0;
+		
+		if (w0 == 0 || w1 == 0)
+			continue;
+		u0tmp = SumWpixPro[i];
+		u1tmp = SumWpixPro[255] - SumWpixPro[i];
+		
+		u0 = u0tmp / w0;
+		u1 = u1tmp / w1;
+		deltaTmp = (float)(w0 *w1* pow((u0 - u1), 2)); //类间方差公式 g = w1 * w2 * (u1 - u2) ^ 2
+		if (deltaTmp > deltaMax)
+		{
+			deltaMax = deltaTmp;
+			th = i;
+		}
+	}
+	// double c2 = getTickCount();
+	// //cout << "c2 >> " << (c2 - c1) / getTickFrequency() << endl;//输出时间
+	// uchar lutData[256];
+	// for (int i = 0; i < 256; i++)
+	// { 
+	// 	if (i > th)
+	// 		lutData[i] = 255;
+	// 	else
+	// 		lutData[i] = 0;
+	// }
+	// Mat lut(1, 256, CV_8UC1, lutData);
+	// LUT(src, lut, dst);
+
+	// double c3 = getTickCount();
+	//cout << "c3 >> " << (c3 - c2) / getTickFrequency() << endl;//输出时间
+	return th;
+}
 
 int main()
 {  
-    cv::Mat Src= cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test2.bmp",1);
-    if(!Src.data){
+  cv::Mat Src= cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test4.bmp",1);
+  if(!Src.data){
         printf("fail to open the image!\n");
         return -1;
-    }
-    // 80-90ms
-    time_t begin, mid, end;
+  }
+  // 80-90ms
+  time_t begin, otsu1, otsu2, otsu3;
     
-    int thd_otsu1, thd_otsu2;
+  int thd_otsu1, thd_otsu2, thd_otsu3;
 	begin = clock();
-    // thd_otsu1 = getOTSUthread(Src);
-	thd_otsu2 = GetMatOTSU(Src);
+  // thd_otsu1 = getOTSUthread(Src);
+  for (int i=0; i<1000; i++)
+  {
+    thd_otsu1 = GetMatOTSU(Src);
+  }
 
-    mid = clock();
+  otsu1 = clock();
+
 	// thd_otsu2 = GetMatOTSU(Src);
-	thd_otsu1 = getOTSUthread(Src);
-	end = clock();
+  for (int i=0; i<1000; i++)
+  {
+    thd_otsu2 = getOTSUthread(Src);
+  }
+  otsu2 = clock();
 
-    std::cout << "thd_otsu1: " << thd_otsu1 << "\tthd_otsu2: " << thd_otsu2 << std::endl;
-    std::cout << "getOTSUthread1 costs:" << double(mid - begin) / 1000 << "ms" <<
-	 "\tgetOTSUthread2 costs:" << double(end - mid) / 1000 << "ms" <<std::endl;
+  for (int i=0; i<1000; i++)
+  {
+    thd_otsu3 = myOtsu(Src);
+  }
+	otsu3 = clock();
 
-    // lines.imshow();
-    return 0;
+  std::cout << "thd_otsu1: " << thd_otsu1 << "\tthd_otsu2: " << thd_otsu2 << "\tthd_otsu3: " << thd_otsu3 << std::endl;
+  std::cout << "GetMatOTSU costs:" << double(otsu1 - begin) / 1000000 << "ms" <<
+  "\tgetOTSUthread costs:" << double(otsu2 - otsu1) / 1000000 << "ms" << 
+  "\tmyOtsu costs:" << double(otsu3 - otsu2) / 1000000 << "ms" << std::endl;
+
+  // lines.imshow();
+  return 0;
 
 }

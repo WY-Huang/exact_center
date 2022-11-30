@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/local/include/opencv4",
-                "/usr/local/include/vtk-7.1",
+                "/usr/local/include/vtk-8.2",
                 "/opt/ros/galactic/include"
             ],
             "defines": [],

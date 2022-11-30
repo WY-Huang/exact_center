@@ -30,6 +30,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
 { 
     Mat pyrimg;
     Mat gaussimg;
+	Mat binaryimg;
     // std::cout<< srcimg.channels() <<std::endl;
     // cvtColor(srcimg, grayimg, COLOR_BGR2GRAY);
     // std::cout<<"3"<<std::endl;
@@ -40,15 +41,18 @@ void LaserCenter::gray_centroid(Mat srcimg)
 
     pyrDown(srcimg, pyrimg);
     // std::cout<< pyrimg.size() <<std::endl;
-    // imshow("pyrimg", pyrimg);
+    imshow("pyrimg", pyrimg);
 
-    GaussianBlur(pyrimg, gaussimg, Size(3, 3), 0);
+    // GaussianBlur(pyrimg, gaussimg, Size(3, 3), 0);
+	gaussimg = pyrimg;
     gauss_time = clock();
 
     // thd_otsu = GetMatOTSU(grayimg);
     thd_otsu = myOtsu(gaussimg);
     otsu_time = clock();
-    // imshow("grayImg", grayimg);
+
+	threshold(gaussimg, binaryimg, thd_otsu, 255, 0);
+    imshow("binaryimg", binaryimg);
     // waitKey(0);
     //遍历每一列
     // float x0 = 0;
@@ -65,7 +69,9 @@ void LaserCenter::gray_centroid(Mat srcimg)
 
         // 计算单行otsu
         // thd_otsu = GetLineOTSU(grayimg, i);
-        
+        float mean_value;
+		int current_j = 0;
+		int count_j = 0;
         for (int j = 0;j < gaussimg.rows;j++) 
         {
             float current = gaussimg.at<uchar>(j, i);
@@ -74,9 +80,24 @@ void LaserCenter::gray_centroid(Mat srcimg)
             {
                 // current_value.push_back(current);
                 // current_coordinat.push_back(j);
-
-                sum_valuecoor += current * j;
-                sum_value += current;
+				count_j++;
+				if (count_j<4)
+				{
+					sum_valuecoor += current * j;
+                	sum_value += current;
+					current_j += j;
+					mean_value = current_j / count_j;
+				}
+				else
+				{
+					// 
+					if ((float)(j-15) < mean_value)
+					{
+						sum_valuecoor += current * j;
+                		sum_value += current;
+					}
+				}
+                
             }
         }
 
@@ -97,8 +118,17 @@ void LaserCenter::gray_centroid(Mat srcimg)
     // 扩充到原始大小
     for (int k = 0; k < (pyr_coordinat.size() - 1); k++)
     {
-        src_coordinat.push_back(pyr_coordinat[k] * 2);
-        src_coordinat.push_back(pyr_coordinat[k] + pyr_coordinat[k+1]); 
+        if (abs(pyr_coordinat[k+1]-pyr_coordinat[k]) < 10)
+		{
+			src_coordinat.push_back(pyr_coordinat[k] * 2);
+        	src_coordinat.push_back(pyr_coordinat[k] + pyr_coordinat[k+1]);
+		}
+		else
+		{
+			src_coordinat.push_back(pyr_coordinat[k] * 2);
+        	src_coordinat.push_back(pyr_coordinat[k+1] *2);
+		}
+		 
         if ((k + 2) == pyr_coordinat.size())
         {
             src_coordinat.push_back(pyr_coordinat[k+1] * 2);
@@ -108,12 +138,13 @@ void LaserCenter::gray_centroid(Mat srcimg)
 
     // std::cout << pyr_coordinat.size() << "\t" << src_coordinat.size() << std::endl;
     // 绘制中心线
+	cvtColor(srcimg, srcimg,cv::COLOR_GRAY2BGR);
     for (int n = 0; n < src_coordinat.size(); n++)
     {
-        circle(srcimg, Point(n, src_coordinat[n]), 0, Scalar(0, 0, 255), -1, 8);
+        
+		circle(srcimg, Point(n, src_coordinat[n]), 0, Scalar(0, 0, 255), -1, 8);
         // std::cout <<  src_coordinat[n] << std::endl;
     }
-
 
     //计时结束
     end = clock();
