@@ -5,7 +5,7 @@
 LaserCenter::LaserCenter() : Node("sub_images")
 {
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-        "camera_tis_node/image", rclcpp::SensorDataQoS(), std::bind(&LaserCenter::topic_callback, this, _1)
+        "rotate_image_node/image_rotated", rclcpp::SensorDataQoS(), std::bind(&LaserCenter::topic_callback, this, _1)
     );
 }
 
@@ -59,7 +59,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
 
     std::vector<float> pyr_coordinat;
     std::vector<float> src_coordinat;
-    for (int i = 0;i < gaussimg.cols;i++) 
+    for (int i = 0;i < gaussimg.rows;i++) 
     {
         float sum_value = 0;
         float sum_valuecoor = 0;
@@ -71,9 +71,9 @@ void LaserCenter::gray_centroid(Mat srcimg)
         // thd_otsu = GetLineOTSU(grayimg, i);
 		int current_j1 = 0;
 		int count_j = 0;
-        for (int j = 0;j < gaussimg.rows;j++) 
+        for (int j = 0;j < gaussimg.cols;j++) 
         {
-            float current = gaussimg.at<uchar>(j, i);
+            float current = gaussimg.at<uchar>(i, j);
             //将符合阈值的点灰度值和坐标存入数组
             if (current > thd_otsu) 
             {
@@ -140,7 +140,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
     for (int n = 0; n < src_coordinat.size(); n++)
     {
         
-		circle(srcimg, Point(n, src_coordinat[n]), 0, Scalar(0, 0, 255), -1, 8);
+		circle(srcimg, Point(src_coordinat[n], n), 0, Scalar(0, 0, 255), -1, 8);
         // std::cout <<  src_coordinat[n] << std::endl;
     }
 
@@ -161,6 +161,7 @@ void LaserCenter::gray_centroid(Mat srcimg)
     fps = std::to_string(round(1000 / total_cost));
     std::cout << "fps: " << fps << std::endl;
     putText(srcimg, fps, cv::Point(20, 20), cv::FONT_ITALIC, 0.8, cv::Scalar(255, 255, 255));
+	resize(srcimg, srcimg, Size(512, 768));
     imshow("pyrimg_line", srcimg);
     waitKey(5);
 
