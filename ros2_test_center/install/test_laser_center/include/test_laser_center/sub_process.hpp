@@ -22,6 +22,11 @@ private:
 
     void topic_callback(const sensor_msgs::msg::Image msg);
 
+    // 抓取图片
+    void grap_images(Mat & img);
+    int num_img;
+    std::string start;
+
     // 高斯滤波+大津阈值+灰度质心法
     void gray_centroid(Mat img);
     int getOTSUthread(const Mat& src);// 大津阈值法2

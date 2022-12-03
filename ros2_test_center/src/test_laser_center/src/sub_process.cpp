@@ -20,10 +20,26 @@ void LaserCenter::topic_callback(const sensor_msgs::msg::Image msg)
 
     // imshow("srcimg", cvImage);
     // waitKey(5);
+	if (num_img < 300)
+		grap_images(cvImage);
     
-    gray_centroid(cvImage);
+    // gray_centroid(cvImage);
 
     // thining_gray_centroid(cvImage);
+}
+
+void LaserCenter::grap_images(Mat & img)
+{
+	if (start != "1")
+	{
+		std::cout << "输入1开始:" << std::endl;
+		std::cin >> start;
+	}	
+	num_img++;
+	std::cout << "开始采集：" << num_img << std::endl;
+
+	std::string filename = "srcImgs/" + std::to_string(num_img) + ".png";
+	imwrite(filename, img);
 }
 
 void LaserCenter::gray_centroid(Mat srcimg)
