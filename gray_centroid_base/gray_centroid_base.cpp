@@ -8,14 +8,15 @@ using namespace std;
 
 void gray_centroid()
 {
-    Mat srcimg = imread("/home/wanyel/vs_code/exact_center/gray_centroid_base/20221114100129.bmp");
+    Mat srcimg = imread("/home/wanyel/vs_code/exact_center/gray_centroid_base/test.png");
     rotate(srcimg, srcimg, 0);
     // Size newsize = Size(srcimg.cols*0.5, srcimg.rows*0.5);
     // resize(srcimg, srcimg, newsize);
     Mat grayimg;
     cvtColor(srcimg, grayimg, COLOR_BGR2GRAY);
-    // imshow("srcImg", srcimg);
-    // waitKey(0);
+    threshold(grayimg, grayimg, 128, 255, 0);
+    imshow("grayimg", grayimg);
+    waitKey(0);
 
     //计时开始 45ms
     time_t begin, end;
