@@ -206,6 +206,33 @@ uninstall/fast:
 	$(MAKE) -f CMakeFiles/uninstall.dir/build.make CMakeFiles/uninstall.dir/build
 .PHONY : uninstall/fast
 
+src/myhalcv2.o: src/myhalcv2.cpp.o
+
+.PHONY : src/myhalcv2.o
+
+# target to build an object file
+src/myhalcv2.cpp.o:
+	$(MAKE) -f CMakeFiles/sub_process.dir/build.make CMakeFiles/sub_process.dir/src/myhalcv2.cpp.o
+.PHONY : src/myhalcv2.cpp.o
+
+src/myhalcv2.i: src/myhalcv2.cpp.i
+
+.PHONY : src/myhalcv2.i
+
+# target to preprocess a source file
+src/myhalcv2.cpp.i:
+	$(MAKE) -f CMakeFiles/sub_process.dir/build.make CMakeFiles/sub_process.dir/src/myhalcv2.cpp.i
+.PHONY : src/myhalcv2.cpp.i
+
+src/myhalcv2.s: src/myhalcv2.cpp.s
+
+.PHONY : src/myhalcv2.s
+
+# target to generate assembly for a file
+src/myhalcv2.cpp.s:
+	$(MAKE) -f CMakeFiles/sub_process.dir/build.make CMakeFiles/sub_process.dir/src/myhalcv2.cpp.s
+.PHONY : src/myhalcv2.cpp.s
+
 src/sub_process.o: src/sub_process.cpp.o
 
 .PHONY : src/sub_process.o
@@ -249,6 +276,9 @@ help:
 	@echo "... sub_process"
 	@echo "... test_laser_center_uninstall"
 	@echo "... uninstall"
+	@echo "... src/myhalcv2.o"
+	@echo "... src/myhalcv2.i"
+	@echo "... src/myhalcv2.s"
 	@echo "... src/sub_process.o"
 	@echo "... src/sub_process.i"
 	@echo "... src/sub_process.s"

@@ -6,6 +6,24 @@
 
 #IncludeRegexTransform: 
 
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/myhalcv2.h
+opencv2/opencv.hpp
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/opencv2/opencv.hpp
+opencv2/ximgproc.hpp
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/opencv2/ximgproc.hpp
+tistdtypes.h
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/tistdtypes.h
+string.h
+-
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+stdint.h
+-
+
 /home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/sub_process.hpp
 rclcpp/rclcpp.hpp
 /home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/rclcpp/rclcpp.hpp
@@ -22,6 +40,12 @@ vector
 time.h
 -
 string
+-
+test_laser_center/myhalcv2.h
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/test_laser_center/myhalcv2.h
+
+/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include/test_laser_center/tistdtypes.h
+stdint.h
 -
 
 /home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/src/sub_process.cpp

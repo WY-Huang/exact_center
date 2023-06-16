@@ -14,7 +14,10 @@ find_package(sensor_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 
-add_executable(sub_process src/sub_process.cpp)
+# add_library(${PROJECT_NAME} SHARED src/myhalcv2.cpp)
+
+add_executable(sub_process src/sub_process.cpp
+                            src/myhalcv2.cpp)
 
 target_include_directories(sub_process
   PUBLIC

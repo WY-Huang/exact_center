@@ -133,6 +133,7 @@ int alg103_runimage(cv::Mat &cvimgIn,
     Int32 jiguanglong=5;//5;//激光长度
     Int32 jiguangkuandu=10;//10;//激光宽度
     Int32 jiguangduibidu=5;//5;
+    Int32 lvbomod=1;        // 高斯滤波模式3*3， 5*5， 7*7
 
     if(step==2)
     {
@@ -212,6 +213,26 @@ int alg103_runimage(cv::Mat &cvimgIn,
 
     Myhalcv2::MyCutRoi(imageIn,&m_tempmatIn,Myhalcv2::MHC_CUT_NOTCOPY,nstarti,nstartj,nendi-nstarti+1,nendj-nstartj+1);
 
+    if(lvbomod==0)
+    {
+
+    }
+    else if(lvbomod==1)
+    {
+        Myhalcv2::Mygaussia(m_tempmatIn,&m_brygujia,Myhalcv2::GAUSS_WIN_3x3);
+        m_tempmatIn=m_brygujia;
+    }
+    else if(lvbomod==2)
+    {
+        Myhalcv2::Mygaussia(m_tempmatIn,&m_brygujia,Myhalcv2::GAUSS_WIN_5x5);
+        m_tempmatIn=m_brygujia;
+    }
+    else if(lvbomod==3)
+    {
+        Myhalcv2::Mygaussia(m_tempmatIn,&m_brygujia,Myhalcv2::GAUSS_WIN_7x7);
+        m_tempmatIn=m_brygujia;
+    }
+
     for(j=m_tempmatIn.starty;j<m_tempmatIn.starty+m_tempmatIn.height;j++)
     {
         Int32 sum_valuecoor=0;
@@ -223,8 +244,8 @@ int alg103_runimage(cv::Mat &cvimgIn,
             Int32 dj=j>>2;
             if(imageBry.data[dj*imageBry.nWidth+di]!=0)
             {
-                sum_valuecoor=sum_valuecoor+(Int32)imageIn.data[j*imageIn.nWidth+i]*i;
-                sum_value=sum_value+imageIn.data[j*imageIn.nWidth+i];
+                sum_valuecoor=sum_valuecoor+(Int32)m_tempmatIn.data[j*m_tempmatIn.nWidth+i]*i;
+                sum_value=sum_value+m_tempmatIn.data[j*m_tempmatIn.nWidth+i];
             }
         }
         if(sum_value!=0)
@@ -421,7 +442,7 @@ int main()
 
     for (int i=0; i<pointcloud0.size(); i++)
     {
-        cv::circle(srcimg0, cv::Point(round(pointcloud0[i].x), i), 0, cv::Scalar(0, 0, 255), -1, 8);
+        cv::circle(srcimg0, cv::Point(round(pointcloud0[i].x), pointcloud0[i].y), 0, cv::Scalar(0, 0, 255), -1, 8);
         // std::cout << pointcloud0[i].x << "\t" << round(pointcloud0[i].x) << std::endl;
     }
 

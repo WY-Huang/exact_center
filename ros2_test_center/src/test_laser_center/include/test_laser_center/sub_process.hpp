@@ -7,8 +7,17 @@
 #include <time.h>
 #include <string>
 
+#include "test_laser_center/myhalcv2.h"
+
 using std::placeholders::_1;
 using namespace cv;
+
+class Targetpoint
+{
+public:
+  cv::Point2f pointf;
+  std::string name;
+};
 
 class LaserCenter : public rclcpp::Node
 {
@@ -49,4 +58,7 @@ private:
     double gauss_cost, otsu_cost, gray_cost, total_cost;
     std::string fps;
 
+    int save;
+    int alg103_runimage(cv::Mat &cvimgIn, std::vector <cv::Point2f> &pointcloud, std::vector <Targetpoint> &namepoint,
+                        bool &solderjoints, int step);    //输出结果点信息
 };

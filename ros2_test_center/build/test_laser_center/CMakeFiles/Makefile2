@@ -76,12 +76,12 @@ clean: CMakeFiles/uninstall.dir/clean
 CMakeFiles/sub_process.dir/all:
 	$(MAKE) -f CMakeFiles/sub_process.dir/build.make CMakeFiles/sub_process.dir/depend
 	$(MAKE) -f CMakeFiles/sub_process.dir/build.make CMakeFiles/sub_process.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/wanyel/vs_code/exact_center/ros2_test_center/build/test_laser_center/CMakeFiles --progress-num=1,2 "Built target sub_process"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/wanyel/vs_code/exact_center/ros2_test_center/build/test_laser_center/CMakeFiles --progress-num=1,2,3 "Built target sub_process"
 .PHONY : CMakeFiles/sub_process.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/sub_process.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanyel/vs_code/exact_center/ros2_test_center/build/test_laser_center/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanyel/vs_code/exact_center/ros2_test_center/build/test_laser_center/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/sub_process.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanyel/vs_code/exact_center/ros2_test_center/build/test_laser_center/CMakeFiles 0
 .PHONY : CMakeFiles/sub_process.dir/rule
