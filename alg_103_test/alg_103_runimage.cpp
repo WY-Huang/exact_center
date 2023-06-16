@@ -10,11 +10,11 @@ public:
 };
 
 
-int alg103_runimage( cv::Mat &cvimgIn,
-                                    std::vector <cv::Point2f> &pointcloud,
-                                    std::vector <Targetpoint> &namepoint,
-                                    bool &solderjoints,
-                                    int step)    //输出结果点信息
+int alg103_runimage(cv::Mat &cvimgIn,
+                    std::vector <cv::Point2f> &pointcloud,
+                    std::vector <Targetpoint> &namepoint,
+                    bool &solderjoints,
+                    int step)    //输出结果点信息
 {
     Uint8 bryvalue;
     Int32 i32_bryvalue;
@@ -28,6 +28,7 @@ int alg103_runimage( cv::Mat &cvimgIn,
     Myhalcv2::Mat imageGasupain;
     Myhalcv2::Mat m_tempmatIn;
     Myhalcv2::MyConect ImageConect,ImageConectlong;
+
     Int32 nWidth=cvimgIn.cols;	//输入图像宽
     Int32 nHeight=cvimgIn.rows;	//输入图像高
     Uint8 filterdata[25]={0,0,0,0,0,
@@ -43,6 +44,85 @@ int alg103_runimage( cv::Mat &cvimgIn,
     Int32 jiguangTop,jiguangDeep,jiguangLeft,jiguangRight;
     Int32 nstarti,nendi,nstartj,nendj;
     Targetpoint targetpoint;
+
+    // add start
+    char *cv8uc1_Imagebuff_image;
+    char *cv8uc1_Imagebuff1;
+    char *cv8uc1_Imagebuff2;
+    char *cv8uc1_Imagebuff3;
+    char *cv8uc1_Imagebuff4;
+    char *cv8uc1_Imagebuff5;
+    char *cv8uc1_Imagebuff6;
+    char *cv8uc1_Imagebuff7;
+    char *cv8uc1_Imagebuff8;
+    char *cv8uc1_Imagebuff9;
+
+    Int32 *X_line;
+    float *f_line;
+    Uint8 *X_lineMark;
+    Int32 *X_linedif32,*niheX,*niheY;
+    Myhalcv2::MyConect ImageConectlongPX,Imageheadline;
+
+    Int32 firstsearch;
+    Int32 firstsearch_stx,firstsearch_sty,firstsearch_edx,firstsearch_edy;
+    Int32 jishuST_x,jishuST_y,jishuED_x,jishuED_y,jishuNum;
+    Int32 firstdimian;
+    Int32 fuzhuxielv,b_fuzhuxielv,jishuxielv;
+
+    Myhalcv2::L_Point32 fuzhufindST,fuzhufindED;//结果线2拟合区域,(上方)
+
+//
+    static int oldwidth=0, oldHeight=0;
+
+  // 申请内存空间
+  if(oldwidth!=cvimgIn.cols||oldHeight!=cvimgIn.rows)
+  {
+    // 释放内存
+    if(oldwidth!=0||oldHeight!=0)
+    {
+      Myhalcv2::MyhalcvMemFree();
+      delete [] cv8uc1_Imagebuff_image;
+      delete [] cv8uc1_Imagebuff1;
+      delete [] cv8uc1_Imagebuff2;
+      delete [] cv8uc1_Imagebuff3;
+      delete [] cv8uc1_Imagebuff4;
+      delete [] cv8uc1_Imagebuff5;
+      delete [] cv8uc1_Imagebuff6;
+      delete [] cv8uc1_Imagebuff7;
+      delete [] cv8uc1_Imagebuff8;
+      delete [] X_line;
+      delete [] X_lineMark;
+      delete [] X_linedif32;
+      delete [] niheX;
+      delete [] niheY;
+      delete [] f_line;
+    }
+    oldwidth=cvimgIn.cols;// 1536
+    oldHeight=cvimgIn.rows;// 1024
+    Myhalcv2::MyhalcvMemInit(oldHeight,oldwidth); // 内存初始化
+
+    cv8uc1_Imagebuff_image=new char [oldwidth*oldHeight*4];
+    cv8uc1_Imagebuff1=new char [oldwidth*oldHeight];
+    cv8uc1_Imagebuff2=new char [Myhalcv2::getHoughsize()];
+    cv8uc1_Imagebuff3=new char [Myhalcv2::getConectsize()*oldwidth*oldHeight];
+    cv8uc1_Imagebuff4=new char [oldwidth*oldHeight];
+    cv8uc1_Imagebuff5=new char [oldwidth*oldHeight];
+    cv8uc1_Imagebuff6=new char [oldwidth*oldHeight*2];
+    cv8uc1_Imagebuff7=new char [oldwidth*oldHeight];
+    cv8uc1_Imagebuff8=new char [oldwidth*oldHeight];
+    cv8uc1_Imagebuff9=new char [oldwidth*oldHeight];
+
+    Int32 bigsize;//1536
+    bigsize=oldwidth>oldHeight?oldwidth:oldHeight;
+    X_line=new Int32 [bigsize];
+    f_line=new float [bigsize];
+    X_lineMark=new Uint8 [bigsize*4];
+    X_linedif32=new Int32 [bigsize];
+    niheX=new Int32 [bigsize];
+    niheY=new Int32 [bigsize];
+  }
+  // add end
+
 
 /*********************/
     //算法参数
@@ -322,19 +402,19 @@ int alg103_runimage( cv::Mat &cvimgIn,
 
 int main()
 {
-    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test2r.jpg");
+    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test2r.jpg");
     cv::Mat grayimg;
     cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
 
     std::vector <cv::Point2f> pointcloud0;
-    std::vector <cv::Point2f> namepoint0;
+    std::vector <Targetpoint> namepoint0;
     bool solderjoints0;
 
     // 20-30ms
     clock_t begin, end;
     begin = clock();
 
-    alg103_graycentroid(grayimg, pointcloud0, namepoint0, solderjoints0, 1);
+    alg103_runimage(grayimg, pointcloud0, namepoint0, solderjoints0, 1);
 
     end = clock();
     std::cout << "alg103runimage costs:" << double(end - begin) / 1000 << "ms" << std::endl;
@@ -344,7 +424,10 @@ int main()
         cv::circle(srcimg0, cv::Point(round(pointcloud0[i].x), i), 0, cv::Scalar(0, 0, 255), -1, 8);
         // std::cout << pointcloud0[i].x << "\t" << round(pointcloud0[i].x) << std::endl;
     }
-    cv::imshow("centerline", srcimg0);
+
+    cv::Mat rotatedImage;
+    cv::rotate(srcimg0, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+    cv::imshow("centerline", rotatedImage);
     // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
     cv::waitKey(0);
     return 0;

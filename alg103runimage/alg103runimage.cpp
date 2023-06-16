@@ -454,7 +454,7 @@ int alg103_graycentroid(cv::Mat &cvimgIn,
 
 int main()
 {
-    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test2r.jpg");
+    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test2r.jpg");
     cv::Mat grayimg;
     cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
 

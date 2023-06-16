@@ -1,4 +1,4 @@
-#include "myhalcv2/myhalcv2.h"
+#include "myhalcv2.h"
 
 namespace Myhalcv2
 {
