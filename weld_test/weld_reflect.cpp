@@ -1,3 +1,7 @@
+/*
+焊缝识别处理算法
+*/
+
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <ctime>

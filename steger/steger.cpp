@@ -1,3 +1,7 @@
+/*
+中心线提取的steger算法
+*/
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>
 #include <vector>

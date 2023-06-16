@@ -1,3 +1,7 @@
+/*
+大津阈值分割算法
+*/
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>
 #include <vector>
