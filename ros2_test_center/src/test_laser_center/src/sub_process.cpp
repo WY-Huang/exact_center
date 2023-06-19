@@ -9,7 +9,7 @@ ros2 run test_laser_center sub_process
 
 #include "test_laser_center/sub_process.hpp"
 
-#define QUICK_TRANSMIT    //快速传输
+#define QUICK_TRANSMIT    //快速传输高斯下采样后的小图
 // video/compressed   camera_tis_node/image    rotate_image_node/image_rotated
 
 
@@ -71,7 +71,7 @@ void LaserCenter::topic_callback(const sensor_msgs::msg::Image msg)
 	}
 
 	// cv::namedWindow("centerline", cv::WINDOW_NORMAL);  // 创建新的图像窗口
-	// cv::imshow("centerline", rotatedImage);
+	cv::imshow("centerline", rotatedImage);
     // cv::waitKey(5);
 	// cv::destroyWindow("centerline");  // 销毁之前的窗口
 	
@@ -761,9 +761,9 @@ int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
                     bool &solderjoints,
                     int step)    //输出结果点信息
 {
-    Uint8 bryvalue;
-    Int32 i32_bryvalue;
-    Int32 i,j,n,t;
+    Uint8 bryvalue;             // 二值化阈值
+    Int32 i32_bryvalue;         // 二值化阈值+平均值
+    Int32 i,j,n,t;              // for循环中的索引
     Myhalcv2::Mat imageIn;
     Myhalcv2::Mat imageGasu;
     Myhalcv2::Mat imageBry;
@@ -884,37 +884,38 @@ int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
     {
       return 0;
     }
-    imageIn=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff_image);
-    Myhalcv2::CvMatToMat(cvimgIn,&imageIn,cv8uc1_Imagebuff_image);
+    imageIn=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff_image);   // 创建各个自定义的mat图像
+    Myhalcv2::CvMatToMat(cvimgIn,&imageIn,cv8uc1_Imagebuff_image);                          // opencv的mat转自定义mat
+
     imageGasu=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff5);
     imageBry=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff4);
     m_brygujia=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff7);
     m16_filterIma=Myhalcv2::MatCreat(nWidth,nHeight,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff6);
     
-    Myhalcv2::Mygausspyramid_2levl(imageIn,&imageGasu);
+    Myhalcv2::Mygausspyramid_2levl(imageIn,&imageGasu);     // 高斯金字塔下采样为原图的1/16大小，高宽各1/4
 
     if(step==3)
     {
-        Myhalcv2::MatToCvMat(imageGasu,&cvimgIn);
+        Myhalcv2::MatToCvMat(imageGasu,&cvimgIn);   // 输出高斯金字塔处理后的小图
         return 0;
     }
 
     if(step!=0)
     {
-        imageGasupain=Myhalcv2::MatCreatClone(imageGasu,cv8uc1_Imagebuff8);
+        imageGasupain=Myhalcv2::MatCreatClone(imageGasu,cv8uc1_Imagebuff8); // 复制一份imageGasu
     }
 
-    Myhalcv2::Mybinaryval(imageGasu,&bryvalue,Myhalcv2::MHC_BARINYVAL_MEAN);
+    Myhalcv2::Mybinaryval(imageGasu,&bryvalue,Myhalcv2::MHC_BARINYVAL_MEAN);    // 统计全图计算二值化阈值
 
-    i32_bryvalue=(Int32)bryvalue+pingjun;//求平均值二值化阈值
-    Myhalcv2::Mybinary(imageGasu,&imageBry,Myhalcv2::MHC_BARINY_VALUE_IMG,255,i32_bryvalue,0);
+    i32_bryvalue=(Int32)bryvalue+pingjun;   //求平均值二值化阈值
+    Myhalcv2::Mybinary(imageGasu,&imageBry,Myhalcv2::MHC_BARINY_VALUE_IMG,255,i32_bryvalue,0);  // 将高斯图二值化
     if(step==4)
     {
-        Myhalcv2::MatToCvMat(imageBry,&cvimgIn);
+        Myhalcv2::MatToCvMat(imageBry,&cvimgIn);    // 输出二值化后的小图
         return 0;
     }
     m_brygujia=Myhalcv2::MatCreatzero(nHeight/4,nWidth/4,Myhalcv2::CCV_8UC1,cv8uc1_Imagebuff7);
-    Myhalcv2::Mynormalize_lineXY(imageGasu,&m_brygujia,jiguangduibidu);
+    Myhalcv2::Mynormalize_lineXY(imageGasu,&m_brygujia,jiguangduibidu);     // 根据对比度逐行归一化
 
     if(step==5)
     {
@@ -923,7 +924,7 @@ int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
     }
 
     i32_bryvalue=gujiaerzhi;
-    Myhalcv2::Mybinary(m_brygujia,&m_brygujia,Myhalcv2::MHC_BARINY_VALUE_IMG,255,i32_bryvalue,0);
+    Myhalcv2::Mybinary(m_brygujia,&m_brygujia,Myhalcv2::MHC_BARINY_VALUE_IMG,255,i32_bryvalue,0);   // 骨架图二值化，根据gujiaerzhi
 
     if(step==6)
     {
