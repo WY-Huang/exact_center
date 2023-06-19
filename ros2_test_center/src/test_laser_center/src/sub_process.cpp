@@ -871,14 +871,14 @@ int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
 
 /*********************/
     //算法参数
-    Int32 pingjun=15;//15;
-    Int32 gujiaerzhi=160;//160;
-    Int32 widthliantongdis=5;//5;
-    Int32 highliantongdis=5;//5;
-    Int32 jiguanglong=5;//5;//激光长度
-    Int32 jiguangkuandu=10;//10;//激光宽度
-    Int32 jiguangduibidu=5;//5;
-    Int32 lvbomod=1;        // 高斯滤波模式3*3， 5*5， 7*7
+    Int32 pingjun=15;           // 15;
+    Int32 gujiaerzhi=160;       // 160;
+    Int32 widthliantongdis=5;   // 5;
+    Int32 highliantongdis=5;    // 5;
+    Int32 jiguanglong=5;        // 5; 激光长度
+    Int32 jiguangkuandu=10;     // 10; 激光宽度
+    Int32 jiguangduibidu=5;     // 5;
+    Int32 lvbomod=1;            // 高斯滤波模式3*3， 5*5， 7*7
 
     if(step==2)
     {
