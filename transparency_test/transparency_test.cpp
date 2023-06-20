@@ -8,26 +8,21 @@
 // 绘制图像一行的灰度值分布
 void plotGrayCurve(cv::Mat img)
 {
-    // 获取图像的行数和列数
     int rows = img.rows;
     int cols = img.cols;
 
-    cv::Mat data_x(1, 1024, CV_64F);
-    cv::Mat data_y(1, 1024, CV_64F);
+    cv::Mat data_x(1, cols, CV_64F);
+    cv::Mat data_y(1, cols, CV_64F);
 
     // 按行遍历图像
     for (int i = 0; i < 1; i++)
     {
-        // 获取当前行的指针
-        uchar* rowPtr = img.ptr<uchar>(i);
+        uchar* rowPtr = img.ptr<uchar>(i);  // 获取当前行的指针
 
-        // 遍历当前行的像素
         for (int j = 0; j < cols; j++)
         {
-            // 获取当前像素的灰度值
-            uchar pixelValue = rowPtr[j];
+            uchar pixelValue = rowPtr[j];   // 获取当前像素的灰度值
 
-            // 处理当前像素
             data_x.at<double>(0, j) = j;
             data_y.at<double>(0, j) = pixelValue;
         }
