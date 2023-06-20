@@ -760,17 +760,17 @@ int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
                                 bool &solderjoints,
                                 int step)    //输出结果点信息
 {
-    Uint8 bryvalue;             // 二值化阈值
-    Int32 i32_bryvalue;         // 二值化阈值+平均值
+    Uint8 bryvalue;             // 统计全图得到二值化阈值
+    Int32 i32_bryvalue;         // 二值化阈值+平均值（可设置参数）
     Int32 i,j,n,t;              // for循环中的索引
-    Myhalcv2::Mat imageIn;
-    Myhalcv2::Mat imageGasu;
-    Myhalcv2::Mat imageBry;
-    Myhalcv2::Mat m16_filterIma;
-    Myhalcv2::Mat m_brygujia;
-    Myhalcv2::Mat m_filter;
-    Myhalcv2::Mat imageGasupain;
-    Myhalcv2::Mat m_tempmatIn;
+    Myhalcv2::Mat imageIn;      // 原图（MyMat）
+    Myhalcv2::Mat imageGasu;    // 高斯下采样后的1/16图
+    Myhalcv2::Mat imageBry;     // 高斯图二值化后的灰度图
+    Myhalcv2::Mat m16_filterIma;    // filterdata巻积后的图（未使用）
+    Myhalcv2::Mat m_brygujia;       // 高斯图->灰度骨架图->二值骨架图
+    Myhalcv2::Mat m_filter;         // 滤波器（未使用）
+    Myhalcv2::Mat imageGasupain;    // 高斯图副本
+    Myhalcv2::Mat m_tempmatIn;      // roi图用于高斯滤波和灰度质心法
     Myhalcv2::MyConect ImageConect,ImageConectlong;
 
     Int32 nWidth=cvimgIn.cols;	//输入图像宽
