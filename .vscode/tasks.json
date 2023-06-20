@@ -13,7 +13,8 @@
 
                 /* 项目所需的头文件路径 */
                 "-I","${workspaceFolder}/",
-                "-I","/usr/local/include/opencv4/",
+                // "-I","/usr/local/include/opencv4/",
+                "-I","/usr/include/opencv4/",
                 "-I","/usr/local/include/vtk-7.1",
 
                 /* 项目所需的库文件路径 */
@@ -21,6 +22,7 @@
 
                 /* OpenCV的lib库 */
                 "/usr/local/lib/libopencv_*",
+                "/usr/lib/x86_64-linux-gnu/libopencv_*",
                 "-L","/usr/local/lib/libvtk*",
                 "/opt/ros/galactic/lib/lib*"
 
