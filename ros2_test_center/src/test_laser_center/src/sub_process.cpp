@@ -754,12 +754,11 @@ void LaserCenter::thining_point(Mat& inputimg, std::vector<Point2d>& pt)
 }
 
 // 103算法测试
-
 int LaserCenter::alg103_runimage(cv::Mat &cvimgIn,
-                    std::vector <cv::Point2f> &pointcloud,
-                    std::vector <Targetpoint> &namepoint,
-                    bool &solderjoints,
-                    int step)    //输出结果点信息
+                                std::vector <cv::Point2f> &pointcloud,
+                                std::vector <Targetpoint> &namepoint,
+                                bool &solderjoints,
+                                int step)    //输出结果点信息
 {
     Uint8 bryvalue;             // 二值化阈值
     Int32 i32_bryvalue;         // 二值化阈值+平均值
