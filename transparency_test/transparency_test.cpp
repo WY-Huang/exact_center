@@ -15,7 +15,7 @@ void plotGrayCurve(cv::Mat img)
     cv::Mat data_y(1, cols, CV_64F);
 
     // 按行遍历图像
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < rows; i++)
     {
         uchar* rowPtr = img.ptr<uchar>(i);  // 获取当前行的指针
 
@@ -25,22 +25,24 @@ void plotGrayCurve(cv::Mat img)
 
             data_x.at<double>(0, j) = j;
             data_y.at<double>(0, j) = pixelValue;
+
+            // std::cout << std::to_string(pixelValue) << std::endl;
         }
+
+        cv::Mat plot_result;
+        cv::Ptr<cv::plot::Plot2d> plot = cv::plot::Plot2d::create(data_x,data_y);
+        //自定义参数
+        plot->setShowText(false);
+        // plot->setShowGrid(true);
+        // plot->setPlotBackgroundColor(cv::Scalar(255, 255, 255));
+        // plot->setPlotLineColor(cv::Scalar(255, 0, 0));
+        // plot->setPlotLineWidth(1);
+        // plot->setInvertOrientation(true);//左右颠倒绘制
+
+        plot->render(plot_result);//根据参数进行渲染
+        cv::imshow("Plot Rows GrayValue", plot_result);
+        cv::waitKey(5);
     }
-
-    cv::Mat plot_result;
-
-    cv::Ptr<cv::plot::Plot2d> plot = cv::plot::Plot2d::create(data_x,data_y);
-    //自定义参数
-    plot->setShowText(false);
-    // plot->setShowGrid(true);
-    // plot->setPlotBackgroundColor(cv::Scalar(255, 255, 255));
-    // plot->setPlotLineColor(cv::Scalar(255, 0, 0));
-    // plot->setPlotLineWidth(1);
-    // plot->setInvertOrientation(true);//左右颠倒绘制
-
-    plot->render(plot_result);//根据参数进行渲染
-    cv::imshow("plot 2d data", plot_result);
     cv::waitKey(0);
 }
 
