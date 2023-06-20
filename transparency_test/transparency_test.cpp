@@ -41,7 +41,7 @@ void plotGrayCurve(cv::Mat img)
 
         plot->render(plot_result);//根据参数进行渲染
         cv::imshow("Plot Rows GrayValue", plot_result);
-        cv::waitKey(5);
+        cv::waitKey(10);
     }
     cv::waitKey(0);
 }
