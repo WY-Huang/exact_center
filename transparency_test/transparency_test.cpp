@@ -41,7 +41,7 @@ void plotGrayCurve(cv::Mat img)
 
         plot->render(plot_result);//根据参数进行渲染
         cv::imshow("Plot Rows GrayValue", plot_result);
-        cv::waitKey(10);
+        cv::waitKey(30);
     }
     cv::waitKey(0);
 }
@@ -51,16 +51,19 @@ void plotGrayCurve(cv::Mat img)
 
 int main()
 {
-    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test2r.jpg");
+    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_06_21_15_22_57_545.bmp");
     cv::Mat grayimg;
     cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
+
+    cv::Mat rotatedImage;
+    cv::rotate(grayimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
 
     // 20-30ms
     clock_t begin, end;
     begin = clock();
 
     // algorithm test
-    plotGrayCurve(grayimg);
+    plotGrayCurve(rotatedImage);
     
     end = clock();
     std::cout << "algorithm costs:" << double(end - begin) / 1000 << "ms" << std::endl;
