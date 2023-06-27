@@ -34,11 +34,12 @@ void plotGrayCurve(cv::Mat img)
 
             // std::cout << std::to_string(pixelValue) << std::endl;
         }
+        // std::cout << data_y << std::endl;
 
         cv::Mat plot_result;
         cv::Ptr<cv::plot::Plot2d> plot = cv::plot::Plot2d::create(data_x, data_y);
         //自定义参数
-        plot->setPlotSize(1024, 256);
+        plot->setPlotSize(1024, 300);
         plot->setShowText(false);
         // plot->setShowGrid(true);
         // plot->setPlotBackgroundColor(cv::Scalar(255, 255, 255));
@@ -61,7 +62,7 @@ void erodeDilate(cv::Mat image, uchar* row_ptr)
 
     // cv::Mat element = cv::Mat::zeros(1, 1000, CV_8U);     // 定义零振幅结构元素
     // cv::Mat structuringElement(1, 11, CV_8UC1, cv::Scalar(0));
-    cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(11, 1));
+    cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 1));
     cv::Mat data_x(1, cols, CV_64F);
     cv::Mat data_y(1, cols, CV_64F);
 
@@ -69,16 +70,24 @@ void erodeDilate(cv::Mat image, uchar* row_ptr)
     cv::Mat row_data(1, cols, CV_8UC1, row_ptr);
     // std::cout << "row_data: " << row_data << std::endl;
     
-    cv::Mat dilated_row;        // 进行膨胀操作
-    cv::dilate(row_data, dilated_row, structuringElement);
+    cv::Mat dilated_row_close;        // 进行膨胀操作(闭运算)
+    cv::dilate(row_data, dilated_row_close, structuringElement);
     // std::cout << "dilated_row: " << dilated_row << std::endl;
     
-    cv::Mat eroded_row;         // 进行腐蚀操作
-    cv::erode(dilated_row, eroded_row, structuringElement);
+    cv::Mat eroded_row_close;         // 进行腐蚀操作
+    cv::erode(dilated_row_close, eroded_row_close, structuringElement);
+
+    cv::Mat eroded_row_open;         // 进行腐蚀操作（开运算）
+    cv::erode(eroded_row_close, eroded_row_open, structuringElement);
+
+    cv::Mat dilated_row_open;        // 进行膨胀操作
+    cv::dilate(eroded_row_open, dilated_row_open, structuringElement);
+
+    cv::Mat diff_row = eroded_row_close - dilated_row_open;
 
     for (int j = 0; j < cols; j++)
     {
-        uchar pixelValue = dilated_row.at<uchar>(0, j);   // 获取当前像素的灰度值
+        uchar pixelValue = dilated_row_close.at<uchar>(0, j);   // 获取当前像素的灰度值
 
         data_x.at<double>(0, j) = j;
         data_y.at<double>(0, j) = pixelValue;
@@ -89,7 +98,7 @@ void erodeDilate(cv::Mat image, uchar* row_ptr)
     cv::Mat plot_result;
     cv::Ptr<cv::plot::Plot2d> plot = cv::plot::Plot2d::create(data_x, data_y);
     //自定义参数
-    plot->setPlotSize(1024, 256);
+    plot->setPlotSize(1024, 300);
     plot->setShowText(false);
 
     plot->render(plot_result);//根据参数进行渲染

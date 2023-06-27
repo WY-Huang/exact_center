@@ -16,6 +16,7 @@
                 // "-I","/usr/local/include/opencv4/",
                 "-I","/usr/include/opencv4/",
                 "-I","/usr/local/include/vtk-7.1",
+                "-I", "/home/wanyel/TPSoftware/vcpkg/installed/x64-linux/include",
 
                 /* 项目所需的库文件路径 */
                 "-L", "/usr/local/lib",
