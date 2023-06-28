@@ -17,6 +17,7 @@
                 "-I","/usr/include/opencv4/",
                 "-I","/usr/local/include/vtk-7.1",
                 "-I", "/home/wanyel/TPSoftware/vcpkg/installed/x64-linux/include",
+                "-I","/usr/include/python3.8",
 
                 /* 项目所需的库文件路径 */
                 "-L", "/usr/local/lib",
@@ -25,7 +26,8 @@
                 "/usr/local/lib/libopencv_*",
                 "/usr/lib/x86_64-linux-gnu/libopencv_*",
                 "-L","/usr/local/lib/libvtk*",
-                "/opt/ros/galactic/lib/lib*"
+                "/opt/ros/galactic/lib/lib*",
+                "/usr/lib/x86_64-linux-gnu/libpython3.8*"
 
 
             ],
