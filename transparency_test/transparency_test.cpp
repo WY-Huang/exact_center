@@ -165,10 +165,6 @@ void plotGrayCurve(cv::Mat img)
 }
 
 
-
- 
-
-
 int main()
 {
     cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_06_21_15_22_57_545.bmp");
