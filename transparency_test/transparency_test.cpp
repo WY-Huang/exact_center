@@ -23,6 +23,13 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
     cv::Mat row_data(1, cols, CV_8UC1, row_ptr);
     // std::cout << "row_data: " << row_data << std::endl;
     
+    cv::Mat row_close;        // 闭运算
+    cv::morphologyEx(row_data, row_close, cv::MORPH_CLOSE, structuringElement);
+
+    cv::Mat row_open;         // 开运算
+    cv::morphologyEx(row_close, row_open, cv::MORPH_OPEN, structuringElement);
+
+    /*// ============================================================
     cv::Mat dilated_row_close;        // 进行膨胀操作(闭运算)
     cv::dilate(row_data, dilated_row_close, structuringElement);
     // std::cout << "dilated_row: " << dilated_row << std::endl;
@@ -35,8 +42,9 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
 
     cv::Mat dilated_row_open;        // 进行膨胀操作
     cv::dilate(eroded_row_open, dilated_row_open, structuringElement);
+    // =============================================================*/
 
-    cv::Mat diff_row = eroded_row_close - dilated_row_open;
+    cv::Mat diff_row = row_close - row_open;
 
     cv::Mat sortedMat;
     cv::sortIdx(diff_row, sortedMat, cv::SORT_DESCENDING);  // 对矩阵进行降序排序
@@ -61,7 +69,7 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
     float x_centroid = sum_valuecoor / sum_value;
     // std::cout << "x_centroid: " << x_centroid << std::endl;
 
-    int show = 0;
+    int show = 1;
     if (show)
     {
         for (int j = 0; j < cols; j++)
@@ -82,7 +90,7 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
 
             plot->render(plot_result);//根据参数进行渲染
             cv::imshow("Plot Rows DilateErode", plot_result);
-            // cv::waitKey(0);
+            cv::waitKey(100);
     }
     
 
