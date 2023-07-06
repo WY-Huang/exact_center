@@ -69,7 +69,7 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
     float x_centroid = sum_valuecoor / sum_value;
     // std::cout << "x_centroid: " << x_centroid << std::endl;
 
-    int show = 1;
+    int show = 0;
     if (show)
     {
         for (int j = 0; j < cols; j++)
@@ -175,7 +175,7 @@ void plotGrayCurve(cv::Mat img)
 
 int main()
 {
-    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_06_21_15_22_57_545.bmp");
+    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_06_26_14_34_55_598.bmp");
     cv::Mat grayimg;
     cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
 
