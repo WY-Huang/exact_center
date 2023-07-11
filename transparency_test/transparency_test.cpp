@@ -175,7 +175,7 @@ void plotGrayCurve(cv::Mat img)
 
 int main()
 {
-    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_06_26_14_34_55_598.bmp");
+    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_07_06_14_58_14_043.bmp");
     cv::Mat grayimg;
     cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
 
