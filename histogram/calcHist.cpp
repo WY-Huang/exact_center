@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 	Mat src;
 	const char* winTitle = "input image";
 	
-	src = imread("/home/wanyel/vs_code/exact_center/histogram/data/2023_07_06_14_58_14_043.bmp", IMREAD_GRAYSCALE);
+	src = imread("/home/wanyel/vs_code/exact_center/histogram/data/img/4.bmp", IMREAD_COLOR);
 	if (src.empty()) {
 		printf("could not load image...\n");
 		return 0;
@@ -21,9 +21,9 @@ int main(int argc, char** argv)
 	namedWindow(winTitle, WINDOW_AUTOSIZE);
 	imshow(winTitle, src);
 
-    thresholdSegment(src);
+    // thresholdSegment(src);
 
-	// drawHistogram(src);
+	drawHistogram(src);
 	waitKey(0);
 
 	return 0;
@@ -48,8 +48,8 @@ void drawHistogram(Mat &image) {
 		calcHist(&bgr_plane[1], 1, 0, Mat(), g_hist, 1, bins, ranges);
 		calcHist(&bgr_plane[2], 1, 0, Mat(), r_hist, 1, bins, ranges);
 		// 显示直方图
-		int hist_w = 512;
-		int hist_h = 400;
+		int hist_w = 1024;
+		int hist_h = 800;
 		int bin_w = cvRound((double)hist_w / bins[0]);
 		Mat histImage = Mat::zeros(hist_h, hist_w, CV_8UC3);
 		// 归一化直方图数据
@@ -69,6 +69,7 @@ void drawHistogram(Mat &image) {
 		// 显示直方图
 		namedWindow("Histogram", WINDOW_AUTOSIZE);
 		imshow("Histogram", histImage);
+		imwrite("/home/wanyel/vs_code/exact_center/histogram/data/img/4_histgram.bmp", histImage);
 	}
 	else 
     {
