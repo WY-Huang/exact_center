@@ -166,18 +166,71 @@ void plotGrayCurve(cv::Mat img)
     }
 
     cv::Mat rotatedImage;
-    cv::rotate(centerLineImage, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+    cv::rotate(centerLineImage, rotatedImage, cv::ROTATE_90_CLOCKWISE);
     cv::imshow("centerLineImage", rotatedImage);
     // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
     cv::waitKey(0);
 }
 
+// 灰度变换
+void grayTransform(cv::Mat imgIn, cv::Mat imgOut, int transformMode)
+{
+    switch (transformMode)
+    {
+        // 灰度反转
+        case 1:
+            imgOut = imgIn.clone();
+            for (int i = 0; i < imgIn.rows; i++)
+            {
+                for (int j = 0; j < imgIn.cols; j++)
+                {
+                    imgOut.at<uchar>(i, j) = 255 - imgIn.at<uchar>(i, j);  //灰度反转
+                }
+            }
+            break;
+        // 灰度对数变换
+        case 2:
+            imgOut = imgIn.clone();
+            for (int i = 0; i < imgIn.rows; i++)
+            {
+                for (int j = 0; j < imgIn.cols; j++)
+                {
+                    imgOut.at<uchar>(i, j) = 6 * log((double)(imgIn.at<uchar>(i, j)) + 1);  //对数变换 s=6*log(r+1)
+                }
+            }
+            cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
+            cv::convertScaleAbs(imgOut, imgOut);  //数据类型转换到CV_8U
+
+        // 灰度幂律变换
+        case 3:
+            imgOut = imgIn.clone();
+            for (int i = 0; i < imgIn.rows; i++)
+            {
+                for (int j = 0; j < imgIn.cols; j++)
+                {
+                    imgOut.at<uchar>(i, j) = 6 * pow((double)imgIn.at<uchar>(i, j), 0.5);  //幂律变换 s=6*r^0.5
+                }
+            }
+            cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
+            cv::convertScaleAbs(imgOut, imgOut);  //数据类型转换到CV_8U
+        
+        default:
+            break;
+    }
+
+	imshow("imgOut", imgOut);  //显示反转图像
+    cv::waitKey(0);
+}
 
 int main()
 {
-    cv::Mat srcimg = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/2023_07_06_14_58_14_043.bmp");
+    std::string imgPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/green_50000/2023_07_14_15_04_39_079.bmp";
+    cv::Mat srcimg = cv::imread(imgPath);
     cv::Mat grayimg;
     cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
+
+    cv::Mat counterGrayImg;
+    grayTransform(grayimg, counterGrayImg, 3);  // 灰度变换
 
     cv::Mat rotatedImage;
     cv::rotate(grayimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
