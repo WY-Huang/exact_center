@@ -5,8 +5,16 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/plot.hpp>
 
-float erodeDilate(cv::Mat image, uchar* row_ptr);
+#include <boost/filesystem.hpp>
 
+namespace fs = boost::filesystem;
+
+float erodeDilate(cv::Mat image, uchar* row_ptr);   // 开运算/闭运算提取特征峰
+void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰度值分布
+void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
+
+
+// 开运算/闭运算提取特征峰
 float erodeDilate(cv::Mat image, uchar* row_ptr)
 {
     int rows = image.rows;
@@ -49,6 +57,23 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
     cv::Mat sortedMat;
     cv::sortIdx(diff_row, sortedMat, cv::SORT_DESCENDING);  // 对矩阵进行降序排序
 
+    cv::Mat filterMat;
+    int contourPosFinal = 10000;
+    for (int n=0; n<20; n++)
+    {
+        int contourPos = sortedMat.at<int>(n);
+        int grayValue = row_ptr[contourPos];
+        // std::cout << grayValue << " ";
+        if (grayValue >75 && grayValue < 125 && contourPos < contourPosFinal)
+        {
+            contourPosFinal = contourPos;
+            
+        }
+        
+    }
+    // std::cout << contourPosFinal << " ";
+    // std::cout << row_ptr[contourPosFinal] << std::endl;
+    
     int maxValueIndex1 = sortedMat.at<int>(0);  // 获取排序后的第一个最大值的索引
     int maxValueIndex2 = sortedMat.at<int>(1);  // 获取排序后的第二个最大值的索引
     // std::cout << "Max value 1 index: " << maxValueIndex1 << std::endl;
@@ -56,6 +81,7 @@ float erodeDilate(cv::Mat image, uchar* row_ptr)
 
     int linePos = (maxValueIndex1 < maxValueIndex2) ? maxValueIndex1 : maxValueIndex2;
     // std::cout << "Min linePos: " << linePos << std::endl;
+    linePos = contourPosFinal;
 
     //计算灰度重心
     float sum_valuecoor = 0;
@@ -148,8 +174,10 @@ void plotGrayCurve(cv::Mat img)
             // plot->setInvertOrientation(true);//左右颠倒绘制
 
             plot->render(plot_result);//根据参数进行渲染
+
+            cv::putText(plot_result, std::to_string(i),cv::Point(0, 100), 3, 2, cv::Scalar(0, 255, 255));
             cv::imshow("Plot Rows GrayValue", plot_result);
-            cv::waitKey(0);
+            cv::waitKey(100);
                     
         }
     }
@@ -173,11 +201,11 @@ void plotGrayCurve(cv::Mat img)
 }
 
 // 灰度变换
-void grayTransform(cv::Mat imgIn, cv::Mat imgOut, int transformMode)
+void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
 {
     switch (transformMode)
     {
-        // 灰度反转
+        // 灰度反转 1
         case 1:
             imgOut = imgIn.clone();
             for (int i = 0; i < imgIn.rows; i++)
@@ -188,7 +216,7 @@ void grayTransform(cv::Mat imgIn, cv::Mat imgOut, int transformMode)
                 }
             }
             break;
-        // 灰度对数变换
+        // 灰度对数变换 2
         case 2:
             imgOut = imgIn.clone();
             for (int i = 0; i < imgIn.rows; i++)
@@ -201,7 +229,7 @@ void grayTransform(cv::Mat imgIn, cv::Mat imgOut, int transformMode)
             cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
             cv::convertScaleAbs(imgOut, imgOut);  //数据类型转换到CV_8U
 
-        // 灰度幂律变换
+        // 灰度幂律变换 3
         case 3:
             imgOut = imgIn.clone();
             for (int i = 0; i < imgIn.rows; i++)
@@ -218,38 +246,78 @@ void grayTransform(cv::Mat imgIn, cv::Mat imgOut, int transformMode)
             break;
     }
 
-	imshow("imgOut", imgOut);  //显示反转图像
-    cv::waitKey(0);
+	// cv::imshow("imgOut", imgOut);  //显示反转图像
+    // cv::waitKey(0);
 }
 
 int main()
 {
-    std::string imgPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/green_50000/2023_07_14_15_04_39_079.bmp";
-    cv::Mat srcimg = cv::imread(imgPath);
-    cv::Mat grayimg;
-    cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
+    // 批量读取文件
+    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000";
 
-    cv::Mat counterGrayImg;
-    grayTransform(grayimg, counterGrayImg, 3);  // 灰度变换
+    fs::path directory(folderPath);
 
-    cv::Mat rotatedImage;
-    cv::rotate(grayimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+    // 检查文件夹是否存在
+    if (!fs::exists(directory) || !fs::is_directory(directory)) 
+    {
+        std::cout << "Folder does not exist: " << folderPath << std::endl;
+        return 1;
+    }
 
-    // 20-30ms
-    clock_t begin, end;
-    begin = clock();
+    // 遍历文件夹内的所有文件和子目录
+    for (const auto& entry : fs::directory_iterator(directory)) 
+    {
+        std::string filePath = entry.path().string();
 
-    // algorithm test
-    plotGrayCurve(rotatedImage);
-    
-    end = clock();
-    std::cout << "algorithm costs:" << double(end - begin) / 1000 << "ms" << std::endl;
+        // 检查是否为普通文件
+        if (fs::is_regular_file(entry)) 
+        {
+            // 在这里进行文件的读取和处理
+            std::cout << "Reading file: " << filePath << std::endl;            
+            std::string imgPath = filePath;
 
-    // cv::Mat rotatedImage;
-    // cv::rotate(srcimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
-    // cv::imshow("centerline", rotatedImage);
-    // // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
-    // cv::waitKey(0);
+            cv::Mat srcimg = cv::imread(imgPath);
+            cv::Mat grayimg;
+            cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
+            cv::imshow("grayimg", grayimg);
+
+            cv::Mat cannyImg;
+            cv::Canny(grayimg, cannyImg, 10, 200);  // canny边缘检测
+            cv::imshow("cannyImg", cannyImg);
+
+            cv::Mat grad_x, grad_y;
+            cv::Mat abs_grad_x, abs_grad_y, dst;
+
+            //求x方向梯度
+            cv::Sobel(grayimg, grad_x, CV_16S, 0, 1, 3, 1, 1, cv::BORDER_DEFAULT);
+            cv::convertScaleAbs(grad_x, abs_grad_x);
+            cv::imshow("x方向soble", abs_grad_x);
+
+            cv::Mat counterGrayImg;
+            grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
+
+            cv::Mat rotatedImage;
+            cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+
+            // 20-30ms
+            clock_t begin, end;
+            begin = clock();
+
+            // algorithm test
+            plotGrayCurve(rotatedImage);
+            
+            end = clock();
+            std::cout << "algorithm costs:" << double(end - begin) / 1000 << "ms" << std::endl;
+
+            // cv::Mat rotatedImage;
+            // cv::rotate(srcimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+            // cv::imshow("centerline", rotatedImage);
+            // // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
+            // cv::waitKey(0);
+
+        }
+    }
+
     return 0;
 }
 

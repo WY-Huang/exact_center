@@ -9,7 +9,8 @@
                 "/opt/ros/galactic/include",
                 "/usr/include/opencv4",
                 "/home/wanyel/TPSoftware/vcpkg/installed/x64-linux/include",
-                "/usr/include/python3.8"
+                "/usr/include/python3.8",
+                "/usr/include/boost"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
