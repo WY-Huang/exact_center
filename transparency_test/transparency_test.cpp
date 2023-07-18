@@ -12,6 +12,7 @@ namespace fs = boost::filesystem;
 float erodeDilate(cv::Mat image, uchar* row_ptr);   // 开运算/闭运算提取特征峰
 void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰度值分布
 void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
+void sobelEdge(cv::Mat grayimg);                     // sobel算子
 
 
 // 开运算/闭运算提取特征峰
@@ -250,6 +251,27 @@ void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
     // cv::waitKey(0);
 }
 
+// sobel算子
+void sobelEdge(cv::Mat grayimg)
+{
+    cv::Mat grad_x, grad_y;
+    cv::Mat abs_grad_x, abs_grad_y, dst;
+
+    //求x方向梯度
+    cv::Sobel(grayimg, grad_x, CV_16S, 1, 0, 3, 1, 1, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(grad_x, abs_grad_x);
+    cv::imshow("x方向soble", abs_grad_x);
+
+    //求y方向梯度
+    cv::Sobel(grayimg, grad_y, CV_16S, 0, 1, 3, 1, 1, cv::BORDER_DEFAULT);
+    cv::convertScaleAbs(grad_y, abs_grad_y);
+    cv::imshow("y向soble", abs_grad_y);
+
+    //合并梯度
+    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst);
+    cv::imshow("整体方向soble", dst);
+}
+
 int main()
 {
     // 批量读取文件
@@ -282,16 +304,10 @@ int main()
             cv::imshow("grayimg", grayimg);
 
             cv::Mat cannyImg;
-            cv::Canny(grayimg, cannyImg, 10, 200);  // canny边缘检测
+            cv::Canny(grayimg, cannyImg, 10, 100);  // canny边缘检测
             cv::imshow("cannyImg", cannyImg);
 
-            cv::Mat grad_x, grad_y;
-            cv::Mat abs_grad_x, abs_grad_y, dst;
-
-            //求x方向梯度
-            cv::Sobel(grayimg, grad_x, CV_16S, 0, 1, 3, 1, 1, cv::BORDER_DEFAULT);
-            cv::convertScaleAbs(grad_x, abs_grad_x);
-            cv::imshow("x方向soble", abs_grad_x);
+            sobelEdge(grayimg);
 
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换

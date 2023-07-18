@@ -423,33 +423,59 @@ int alg103_runimage(cv::Mat &cvimgIn,
 
 int main()
 {
-    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test2r.jpg");
+    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/black_50000/2023_07_14_15_12_45_569.bmp");
     cv::Mat grayimg;
     cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
 
-    std::vector <cv::Point2f> pointcloud0;
-    std::vector <Targetpoint> namepoint0;
-    bool solderjoints0;
+    cv::Mat rotatedImage1;
+    cv::rotate(grayimg, rotatedImage1, cv::ROTATE_90_COUNTERCLOCKWISE);
+    cv::Mat rotatedImage2;
+    cv::cvtColor(rotatedImage1, rotatedImage2, cv::COLOR_GRAY2BGR);
 
-    // 20-30ms
-    clock_t begin, end;
-    begin = clock();
+    int number;
 
-    alg103_runimage(grayimg, pointcloud0, namepoint0, solderjoints0, 1);
+    std::cout << "请输入查看步骤（输入 0 结束）: ";
+    std::cin >> number;
 
-    end = clock();
-    std::cout << "alg103runimage costs:" << double(end - begin) / 1000 << "ms" << std::endl;
-
-    for (int i=0; i<pointcloud0.size(); i++)
+    while (number != 0)
     {
-        cv::circle(srcimg0, cv::Point(round(pointcloud0[i].x), pointcloud0[i].y), 0, cv::Scalar(0, 0, 255), -1, 8);
-        // std::cout << pointcloud0[i].x << "\t" << round(pointcloud0[i].x) << std::endl;
-    }
+        std::vector <cv::Point2f> pointcloud0;
+        std::vector <Targetpoint> namepoint0;
+        bool solderjoints0;
+        // 20-30ms
+        clock_t begin, end;
+        begin = clock();
 
-    cv::Mat rotatedImage;
-    cv::rotate(srcimg0, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
-    cv::imshow("centerline", rotatedImage);
-    // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
-    cv::waitKey(0);
+        alg103_runimage(rotatedImage1, pointcloud0, namepoint0, solderjoints0, number);
+
+        end = clock();
+        std::cout << "alg103runimage costs:" << double(end - begin) / 1000 << "ms" << std::endl;
+
+        // 绘制中心线
+        if (number == 1)
+        {
+            for (int i=0; i<pointcloud0.size(); i++)
+            {
+                cv::circle(rotatedImage2, cv::Point(round(pointcloud0[i].x), pointcloud0[i].y), 0, cv::Scalar(0, 0, 255), -1, 8);
+                // std::cout << pointcloud0[i].x << "\t" << round(pointcloud0[i].x) << std::endl;
+            }
+
+            cv::Mat rotatedImage;
+            cv::rotate(rotatedImage2, rotatedImage, cv::ROTATE_90_CLOCKWISE);
+            cv::imshow("centerline", rotatedImage);
+            // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
+            cv::waitKey(0);
+        }
+        else
+        {
+            cv::Mat rotatedImage;
+            cv::rotate(rotatedImage1, rotatedImage, cv::ROTATE_90_CLOCKWISE);
+            cv::imshow("resultImg", rotatedImage);
+            // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
+            cv::waitKey(0);
+        }
+        
+    }
+    
     return 0;
 }
