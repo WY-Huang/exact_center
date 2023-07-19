@@ -12,7 +12,8 @@ namespace fs = boost::filesystem;
 float erodeDilate(cv::Mat image, uchar* row_ptr);   // 开运算/闭运算提取特征峰
 void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰度值分布
 void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
-void sobelEdge(cv::Mat grayimg);                     // sobel算子
+void sobelEdge(cv::Mat grayimg);                    // sobel算子
+void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height);  // 图像ROI
 
 
 // 开运算/闭运算提取特征峰
@@ -224,7 +225,7 @@ void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
             {
                 for (int j = 0; j < imgIn.cols; j++)
                 {
-                    imgOut.at<uchar>(i, j) = 6 * log((double)(imgIn.at<uchar>(i, j)) + 1);  //对数变换 s=6*log(r+1)
+                    imgOut.at<uchar>(i, j) = 2 * log((double)(imgIn.at<uchar>(i, j)) + 1);  //对数变换 s=6*log(r+1)
                 }
             }
             cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
@@ -247,8 +248,8 @@ void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
             break;
     }
 
-	// cv::imshow("imgOut", imgOut);  //显示反转图像
-    // cv::waitKey(0);
+	cv::imshow("imgOut", imgOut);  //显示反转图像
+    cv::waitKey(0);
 }
 
 // sobel算子
@@ -270,6 +271,22 @@ void sobelEdge(cv::Mat grayimg)
     //合并梯度
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst);
     cv::imshow("整体方向soble", dst);
+}
+
+// ROI, 定义ROI区域的位置和大小
+void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height)
+{
+    // 创建ROI区域的矩形
+    cv::Rect roiRect(x, y, width, height);
+
+    // 提取ROI区域
+    cv::Mat roi = imgIn(roiRect);
+
+    // 显示原始图像和ROI区域
+    cv::imshow("Original Image", imgIn);
+    cv::imshow("ROI", roi);
+    cv::imwrite("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roiLog.bmp", roi);
+    cv::waitKey(0);
 }
 
 int main()
@@ -303,14 +320,20 @@ int main()
             cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
             cv::imshow("grayimg", grayimg);
 
-            cv::Mat cannyImg;
-            cv::Canny(grayimg, cannyImg, 10, 100);  // canny边缘检测
-            cv::imshow("cannyImg", cannyImg);
 
-            sobelEdge(grayimg);
+
+            // cv::Mat cannyImg;
+            // cv::Canny(grayimg, cannyImg, 10, 100);  // canny边缘检测
+            // cv::imshow("cannyImg", cannyImg);
+
+            // sobelEdge(grayimg);                     // sobel边缘检测
 
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
+
+            //=====ROI处理=====
+            cv::Mat grayRoi;
+            imgRoi(counterGrayImg, grayRoi, 50, 50, 1200, 500);
 
             cv::Mat rotatedImage;
             cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);

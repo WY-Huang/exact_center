@@ -430,7 +430,7 @@ int main()
         std::cout << "请输入查看步骤（输入 0 结束）: ";
         std::cin >> number;
 
-        cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/black_50000/2023_07_14_15_12_45_569.bmp");
+        cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roiLog.bmp");
         cv::Mat grayimg;
         cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
 
