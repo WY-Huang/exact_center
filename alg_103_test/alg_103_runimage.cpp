@@ -27,19 +27,19 @@ int alg103_runimage(cv::Mat &cvimgIn,
     Myhalcv2::Mat m_filter;
     Myhalcv2::Mat imageGasupain;
     Myhalcv2::Mat m_tempmatIn;
-    Myhalcv2::MyConect ImageConect,ImageConectlong;
+    Myhalcv2::MyConect ImageConect, ImageConectlong;
 
-    Int32 nWidth=cvimgIn.cols;	//输入图像宽
-    Int32 nHeight=cvimgIn.rows;	//输入图像高
+    Int32 nWidth = cvimgIn.cols;	//输入图像宽
+    Int32 nHeight = cvimgIn.rows;	//输入图像高
     Uint8 filterdata[25]={0,0,0,0,0,
                           0,0,0,0,0,
                           1,1,1,1,1,
                           0,0,0,0,0,
                           0,0,0,0,0};
+    Myhalcv2::L_Point32 f_center = {-1,-1};
+    Int32 X_Linestarty = 0;
+    Int32 X_Lineendy = 0;
 
-    Myhalcv2::L_Point32 f_center={-1,-1};
-    Int32 X_Linestarty=0;
-    Int32 X_Lineendy=0;
     cv::Point2f cv_point;
     Int32 jiguangTop,jiguangDeep,jiguangLeft,jiguangRight;
     Int32 nstarti,nendi,nstartj,nendj;
@@ -423,22 +423,22 @@ int alg103_runimage(cv::Mat &cvimgIn,
 
 int main()
 {
-    cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/black_50000/2023_07_14_15_12_45_569.bmp");
-    cv::Mat grayimg;
-    cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
-
-    cv::Mat rotatedImage1;
-    cv::rotate(grayimg, rotatedImage1, cv::ROTATE_90_COUNTERCLOCKWISE);
-    cv::Mat rotatedImage2;
-    cv::cvtColor(rotatedImage1, rotatedImage2, cv::COLOR_GRAY2BGR);
-
-    int number;
-
-    std::cout << "请输入查看步骤（输入 0 结束）: ";
-    std::cin >> number;
+    int number = 1;
 
     while (number != 0)
     {
+        std::cout << "请输入查看步骤（输入 0 结束）: ";
+        std::cin >> number;
+
+        cv::Mat srcimg0 = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/black_50000/2023_07_14_15_12_45_569.bmp");
+        cv::Mat grayimg;
+        cv::cvtColor(srcimg0, grayimg, cv::COLOR_BGR2GRAY);
+
+        cv::Mat rotatedImage1;
+        cv::rotate(grayimg, rotatedImage1, cv::ROTATE_90_COUNTERCLOCKWISE);
+        cv::Mat rotatedImage2;
+        cv::cvtColor(rotatedImage1, rotatedImage2, cv::COLOR_GRAY2BGR);
+        
         std::vector <cv::Point2f> pointcloud0;
         std::vector <Targetpoint> namepoint0;
         bool solderjoints0;
