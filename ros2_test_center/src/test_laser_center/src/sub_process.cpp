@@ -512,7 +512,6 @@ int LaserCenter::myOtsu(Mat & src)
 	return th;
 }
 
-
 void LaserCenter::thining_gray_centroid(Mat img)
 {
     //计时开始 
