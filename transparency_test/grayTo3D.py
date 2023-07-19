@@ -21,12 +21,13 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # 绘制灰度图的三维可视化
-ax.plot_surface(x, y, gray_image, cmap='gray')
+ax.plot_surface(x, y, gray_image, cmap='hot')
+# ax.plot_wireframe(x, y, gray_image, cmap='jet')
 
 # 设置坐标轴标签
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
-ax.set_zlabel('灰度值')
+ax.set_zlabel('GrayValue')
 
 # 显示图形
 plt.show()
