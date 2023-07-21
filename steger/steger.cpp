@@ -14,7 +14,7 @@ using namespace std;
 void StegerCV()
 {
     // 读取图像并转为灰度图 
-    Mat srcImg = imread("srcImg/bmp/test4.bmp", 1);
+    Mat srcImg = imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test4.bmp", 1);
     // Size dsize = Size(1536*0.5, 1024*0.5);
     resize(srcImg, srcImg, Size(1536, 1024));
     Mat grayImg;

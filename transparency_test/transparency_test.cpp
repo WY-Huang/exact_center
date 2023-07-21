@@ -11,7 +11,7 @@ namespace fs = boost::filesystem;
 
 float erodeDilate(cv::Mat image, uchar* row_ptr);   // 开运算/闭运算提取特征峰
 void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰度值分布
-void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
+void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
 void sobelEdge(cv::Mat grayimg);                    // sobel算子
 void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height);  // 图像ROI
 
@@ -203,7 +203,7 @@ void plotGrayCurve(cv::Mat img)
 }
 
 // 灰度变换
-void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
+void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode)
 {
     switch (transformMode)
     {
@@ -225,11 +225,12 @@ void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
             {
                 for (int j = 0; j < imgIn.cols; j++)
                 {
-                    imgOut.at<uchar>(i, j) = 2 * log((double)(imgIn.at<uchar>(i, j)) + 1);  //对数变换 s=6*log(r+1)
+                    imgOut.at<uchar>(i, j) = 2 * log((double)(imgIn.at<uchar>(i, j)) + 1) / log(100);  //对数变换 s=6*log(r+1)
                 }
             }
             cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
             cv::convertScaleAbs(imgOut, imgOut);  //数据类型转换到CV_8U
+            break;
 
         // 灰度幂律变换 3
         case 3:
@@ -243,12 +244,18 @@ void grayTransform(cv::Mat imgIn, cv::Mat &imgOut, int transformMode)
             }
             cv::normalize(imgOut, imgOut, 0, 255, cv::NORM_MINMAX);  //图像归一化，转到0~255范围内
             cv::convertScaleAbs(imgOut, imgOut);  //数据类型转换到CV_8U
+            break;
         
+        // 直方图均衡化 4
+        case 4:
+            cv::equalizeHist(imgIn, imgOut);
+            break;
+
         default:
             break;
     }
 
-	cv::imshow("imgOut", imgOut);  //显示反转图像
+	cv::imshow("imgOut", imgOut);  //显示图像
     cv::waitKey(0);
 }
 
@@ -285,7 +292,7 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
     // 显示原始图像和ROI区域
     cv::imshow("Original Image", imgIn);
     cv::imshow("ROI", roi);
-    cv::imwrite("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roiLog.bmp", roi);
+    // cv::imwrite("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roiLog.bmp", roi);
     cv::waitKey(0);
 }
 
@@ -332,8 +339,8 @@ int main()
             grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
 
             //=====ROI处理=====
-            cv::Mat grayRoi;
-            imgRoi(counterGrayImg, grayRoi, 50, 50, 1200, 500);
+            // cv::Mat grayRoi;
+            // imgRoi(counterGrayImg, grayRoi, 50, 50, 1200, 500);
 
             cv::Mat rotatedImage;
             cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
