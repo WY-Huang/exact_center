@@ -14,6 +14,7 @@ void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰�
 void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
 void sobelEdge(cv::Mat grayimg);                    // sobel算子
 void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height);  // 图像ROI
+void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize);       // 小面积轮廓去除
 
 
 // 开运算/闭运算提取特征峰
@@ -296,23 +297,24 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
     cv::waitKey(0);
 }
 
-/*
-@brief 小面积区域移除
-
+/** @brief 小面积区域移除
+@param imgIn 输入图像
+@param imgIn 输出图像
+@param areaSize 面积阈值
 */
 void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 {
     cv::threshold(imgIn, imgOut, 5, 255, cv::THRESH_BINARY);
 	cv::imshow("binary", imgOut);   
 
-	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));   //针对高亮部分
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));   //针对高亮部分腐蚀
 	cv::erode(imgOut, imgOut, element);
 	cv::imshow("erode", imgOut);
  
 	// 提取连通区域，并剔除小面积联通区域
 	std::vector<std::vector<cv::Point>> contours;           //二值图像轮廓的容器
 	std::vector<cv::Vec4i> hierarchy;                  //4个int向量，分别表示后、前、父、子的索引编号
-	cv::findContours(imgOut, contours, hierarchy,cv::RETR_LIST, cv::CHAIN_APPROX_NONE);             //检测所有轮廓
+	cv::findContours(imgOut, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);             //检测所有轮廓
 	//contours.erase(remove_if(contours.begin(), contours.end(),[](const vector<Point>& c) {return contourArea(c) < 800; }), contours.end());  //vector.erase 删除元素
 	// 显示图像并保存
 	/*imgHSVMask.setTo(0);
@@ -328,7 +330,7 @@ void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 	{
 		if (cv::contourArea(*k, false) < areaSize)
 		{
-            //删除指定元素，返回指向删除元素下一个元素位置的迭代器
+            //删除指定元素，返回指向删除元素下一个元素位置的迭代器，删除小面积轮廓
 			k = contours.erase(k);
 		}
 		else
@@ -341,16 +343,17 @@ void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 		for (int j = 0; j < contours[i].size(); j++)
 		{
 			//获取轮廓上点的坐标
-			cv::Point P = cv::Point(contours[i][j].x, contours[i][j].y);
-			ImgContours.at<uchar>(P) = 255;
+			cv::Point contourPoint = cv::Point(contours[i][j].x, contours[i][j].y);
+			ImgContours.at<uchar>(contourPoint) = 255;
 		}
-		cv::drawContours(ImageContours, contours,i, cv::Scalar(255), -1, 8);
+		cv::drawContours(ImageContours, contours, i, cv::Scalar(255), -1, 8);   // 填充轮廓内部
 	}
- 
-	cv::imshow("轮廓", ImageContours);
-	cv::imshow("轮廓点集合", ImgContours);
+
+	cv::imshow("ImageContoursFilled", ImageContours);
+	cv::imshow("Contours", ImgContours);
 	cv::waitKey(0);
 }
+
 
 int main()
 {
