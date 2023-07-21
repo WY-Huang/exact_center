@@ -256,7 +256,7 @@ void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode)
     }
 
 	cv::imshow("imgOut", imgOut);  //显示图像
-    cv::waitKey(0);
+    // cv::waitKey(0);
 }
 
 // sobel算子
@@ -296,10 +296,66 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
     cv::waitKey(0);
 }
 
+/*
+@brief 小面积区域移除
+
+*/
+void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
+{
+    cv::threshold(imgIn, imgOut, 5, 255, cv::THRESH_BINARY);
+	cv::imshow("binary", imgOut);   
+
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));   //针对高亮部分
+	cv::erode(imgOut, imgOut, element);
+	cv::imshow("erode", imgOut);
+ 
+	// 提取连通区域，并剔除小面积联通区域
+	std::vector<std::vector<cv::Point>> contours;           //二值图像轮廓的容器
+	std::vector<cv::Vec4i> hierarchy;                  //4个int向量，分别表示后、前、父、子的索引编号
+	cv::findContours(imgOut, contours, hierarchy,cv::RETR_LIST, cv::CHAIN_APPROX_NONE);             //检测所有轮廓
+	//contours.erase(remove_if(contours.begin(), contours.end(),[](const vector<Point>& c) {return contourArea(c) < 800; }), contours.end());  //vector.erase 删除元素
+	// 显示图像并保存
+	/*imgHSVMask.setTo(0);
+	drawContours(imgHSVMask, contours, -1, Scalar(255), FILLED);
+	imshow("处理图", imgHSVMask); */
+ 
+	cv::Mat ImageContours = cv::Mat::zeros(imgOut.size(), CV_8UC1);  //绘制
+	cv::Mat ImgContours= cv::Mat::zeros(imgOut.size(), CV_8UC1);
+ 
+	std::vector<std::vector<cv::Point>>::iterator k;                    //迭代器，访问容器数据
+ 
+	for (k = contours.begin(); k != contours.end();)      //遍历容器,设置面积因子
+	{
+		if (cv::contourArea(*k, false) < areaSize)
+		{
+            //删除指定元素，返回指向删除元素下一个元素位置的迭代器
+			k = contours.erase(k);
+		}
+		else
+			++k;
+	}
+
+    //contours[i]代表第i个轮廓，contours[i].size()代表第i个轮廓上所有的像素点
+	for (int i = 0; i < contours.size(); i++)
+	{
+		for (int j = 0; j < contours[i].size(); j++)
+		{
+			//获取轮廓上点的坐标
+			cv::Point P = cv::Point(contours[i][j].x, contours[i][j].y);
+			ImgContours.at<uchar>(P) = 255;
+		}
+		cv::drawContours(ImageContours, contours,i, cv::Scalar(255), -1, 8);
+	}
+ 
+	cv::imshow("轮廓", ImageContours);
+	cv::imshow("轮廓点集合", ImgContours);
+	cv::waitKey(0);
+}
+
 int main()
 {
     // 批量读取文件
-    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000";
+    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_img";
 
     fs::path directory(folderPath);
 
@@ -337,6 +393,9 @@ int main()
 
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
+
+            cv::Mat filterImg;
+            samallAreaRemove(grayimg, filterImg, 5000); // 移除小面积斑点
 
             //=====ROI处理=====
             // cv::Mat grayRoi;
