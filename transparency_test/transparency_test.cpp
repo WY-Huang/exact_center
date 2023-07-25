@@ -1,5 +1,5 @@
 /*
-透明反射物体中心线提取（20230620）
+透明反射物体中心线提取（start:20230620; last:20230724）
 */
 
 #include <opencv2/opencv.hpp>
@@ -9,12 +9,15 @@
 
 namespace fs = boost::filesystem;
 
-float erodeDilate(cv::Mat image, uchar* row_ptr);   // 开运算/闭运算提取特征峰
-void plotGrayCurve(cv::Mat img);                    // 绘制图像一行的灰度值分布
-void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode);  // 灰度变换
-void sobelEdge(cv::Mat grayimg);                    // sobel算子
-void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height);  // 图像ROI
-void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize);       // 小面积轮廓去除
+float erodeDilate(cv::Mat image, uchar* row_ptr);                                       // 开运算/闭运算提取特征峰
+void plotGrayCurve(cv::Mat img);                                                        // 绘制图像一行的灰度值分布
+void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode);           // 灰度变换
+void sobelEdge(cv::Mat grayimg);                                                        // sobel算子
+void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height); // 图像ROI
+void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize);              // 小面积轮廓去除
+void houghCircles(const cv::Mat &grayImg);                                              // 霍夫圆检测
+
+void onMouse(int event, int x, int y, int flags, void* param);                          // 1.回调函数签名
 
 
 // 开运算/闭运算提取特征峰
@@ -299,7 +302,7 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
 
 /** @brief 小面积区域移除
 @param imgIn 输入图像
-@param imgIn 输出图像
+@param imgOut 输出图像
 @param areaSize 面积阈值
 */
 void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
@@ -354,9 +357,53 @@ void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 	cv::waitKey(0);
 }
 
+/**
+ @brief 霍夫圆形检测
+*/
+void houghCircles(const cv::Mat &grayImg) 
+{
+	std::vector<cv::Vec3f> circles;    //minDist 和 param2 数值的设定是关键
+	cv::HoughCircles(grayImg, circles, cv::HOUGH_GRADIENT, 1, 200, 100, 30, 500, 0);
+	cv::Mat srcImgTri;
+    cv::cvtColor(grayImg, srcImgTri, cv::COLOR_GRAY2BGR);
+
+	for (int i = 0; i < circles.size(); i++) 
+    {
+		cv::circle(srcImgTri, cv::Point(circles[i][0], circles[i][1]), circles[i][2], cv::Scalar(0, 0, 255), 2);
+	}
+	cv::imshow("houghCircles", srcImgTri);
+}
+
+ 
+//2.定义回调函数
+void onMouse(int event, int x, int y, int flags, void* param)
+{
+	cv::Mat *im = reinterpret_cast<cv::Mat*>(param);
+	switch (event)
+	{
+		case cv::EVENT_LBUTTONDOWN:
+			std::cout<<"at("<<x<<","<<y<<")value is:"
+				<<static_cast<int>(im->at<uchar>(cv::Point(x,y)))<<std::endl;
+			break;
+
+		case cv::EVENT_RBUTTONDOWN:
+			std::cout<<"input(x,y)"<<std::endl;
+			std::cout<<"x ="<<std::endl;
+			std::cin>>x;
+			std::cout<<"y ="<<std::endl;
+			std::cin>>y;
+			std::cout<<"at("<<x<<","<<y<<")value is:"
+				<<static_cast<int>(im->at<uchar>(cv::Point(x,y)))<<std::endl;
+			break;			
+	}
+}
+
+
 
 int main()
 {
+    
+    
     // 批量读取文件
     std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_img";
 
@@ -385,20 +432,24 @@ int main()
             cv::Mat grayimg;
             cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
             cv::imshow("grayimg", grayimg);
+            cv::setMouseCallback("grayimg", onMouse);   // , reinterpret_cast<void*> (&image)
+            cv::waitKey(0);
 
-
-
-            // cv::Mat cannyImg;
-            // cv::Canny(grayimg, cannyImg, 10, 100);  // canny边缘检测
-            // cv::imshow("cannyImg", cannyImg);
+            cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);
+            
+            // houghCircles(grayimg);                      // 圆形检测
 
             // sobelEdge(grayimg);                     // sobel边缘检测
 
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
 
+            cv::Mat cannyImg;
+            // cv::Canny(counterGrayImg, cannyImg, 5, 100);       // canny边缘检测
+            // cv::imshow("cannyImg", cannyImg);
+
             cv::Mat filterImg;
-            samallAreaRemove(grayimg, filterImg, 5000); // 移除小面积斑点
+            // samallAreaRemove(grayimg, filterImg, 5000); // 移除小面积斑点
 
             //=====ROI处理=====
             // cv::Mat grayRoi;
@@ -412,7 +463,7 @@ int main()
             begin = clock();
 
             // algorithm test
-            plotGrayCurve(rotatedImage);
+            // plotGrayCurve(rotatedImage);
             
             end = clock();
             std::cout << "algorithm costs:" << double(end - begin) / 1000 << "ms" << std::endl;
@@ -420,7 +471,7 @@ int main()
             // cv::Mat rotatedImage;
             // cv::rotate(srcimg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
             // cv::imshow("centerline", rotatedImage);
-            // // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
+            // cv::imwrite("alg103_test2r_round.jpg", srcimg0);
             // cv::waitKey(0);
 
         }
