@@ -4,8 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/plot.hpp>
-
 #include <boost/filesystem.hpp>
+
+#include "edgeDetection.h"
 
 namespace fs = boost::filesystem;
 
@@ -392,10 +393,10 @@ void onMouse(int event, int x, int y, int flags, void* param)
 			break;
 
 		case cv::EVENT_RBUTTONDOWN:
-			std::cout << "input(x,y)" <<std::endl;
+			std::cout << "input(x,y)" << std::endl;
 			std::cout << "x = " << std::endl;
 			std::cin >> x;
-			std::cout << "y = " <<std::endl;
+			std::cout << "y = " << std::endl;
 			std::cin >> y;
 			std::cout << "Img at(" << x << "," << y << ") value is: "
 				      << static_cast<int>(im->at<uchar>(cv::Point(x,y))) << std::endl;
@@ -428,7 +429,7 @@ void imgGrayVisualize(const cv::Mat grayImg)
 int main()
 {
     // 批量读取文件
-    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_img";
+    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_location";
 
     fs::path directory(folderPath);
 
@@ -455,30 +456,38 @@ int main()
             cv::Mat grayimg;
             cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
 
-            imgGrayVisualize(grayimg);     // 点击显示像素点灰度值
+            cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);          // 高斯模糊处理
+
+            EdgeDetection ed(grayimg);                                      // 边缘检测，最小外接矩形
+            // ed.cannyProcess(240, 255);
+            ed.thresholdSeg(250, 255);
+            ed.getContours();
+            // cv::Mat thresholdSegImg;                                        // 普通阈值分割
+            // cv::threshold(grayimg, thresholdSegImg, 250, 255, cv::THRESH_TOZERO);
+            // cv::imshow("thresholdSegImg", thresholdSegImg);
+            // cv::waitKey(0);
+
+            // imgGrayVisualize(grayimg);                                   // 点击显示像素点灰度值           
             
-            cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);
-            
-            // houghCircles(grayimg);                      // 圆形检测
+            // houghCircles(grayimg);                                       // 圆形检测
 
-            // sobelEdge(grayimg);                     // sobel边缘检测
+            // sobelEdge(grayimg);                                          // sobel边缘检测
 
-            cv::Mat counterGrayImg;
-            grayTransform(grayimg, counterGrayImg, 2);  // 灰度变换
+            // cv::Mat counterGrayImg;
+            // grayTransform(grayimg, counterGrayImg, 2);                   // 灰度变换
 
-            cv::Mat cannyImg;
-            // cv::Canny(counterGrayImg, cannyImg, 5, 100);       // canny边缘检测
+            // cv::Mat cannyImg;
+            // cv::Canny(counterGrayImg, cannyImg, 5, 100);                 // canny边缘检测
             // cv::imshow("cannyImg", cannyImg);
 
-            cv::Mat filterImg;
-            // samallAreaRemove(grayimg, filterImg, 5000); // 移除小面积斑点
+            // cv::Mat filterImg;
+            // samallAreaRemove(grayimg, filterImg, 5000);                  // 移除小面积斑点
 
-            //=====ROI处理=====
-            // cv::Mat grayRoi;
+            // cv::Mat grayRoi;                                             // ROI处理
             // imgRoi(counterGrayImg, grayRoi, 50, 50, 1200, 500);
 
-            cv::Mat rotatedImage;
-            cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
+            // cv::Mat rotatedImage;                                        // 旋转图像
+            // cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
 
             // 20-30ms
             clock_t begin, end;
