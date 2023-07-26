@@ -16,8 +16,8 @@ void sobelEdge(cv::Mat grayimg);                                                
 void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height); // 图像ROI
 void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize);              // 小面积轮廓去除
 void houghCircles(const cv::Mat &grayImg);                                              // 霍夫圆检测
-
-void onMouse(int event, int x, int y, int flags, void* param);                          // 1.回调函数签名
+void onMouse(int event, int x, int y, int flags, void* param);                          // 鼠标事件的回调函数签名
+void imgGrayVisualize(const cv::Mat grayImg);                                           // 点击显示像素点的灰度值
 
 
 // 开运算/闭运算提取特征峰
@@ -375,35 +375,58 @@ void houghCircles(const cv::Mat &grayImg)
 }
 
  
-//2.定义回调函数
+// 定义鼠标点击的回调函数
 void onMouse(int event, int x, int y, int flags, void* param)
 {
 	cv::Mat *im = reinterpret_cast<cv::Mat*>(param);
 	switch (event)
 	{
 		case cv::EVENT_LBUTTONDOWN:
-			std::cout<<"at("<<x<<","<<y<<")value is:"
-				<<static_cast<int>(im->at<uchar>(cv::Point(x,y)))<<std::endl;
+			std::cout << "Img at (" << x << "," << y << ") value is: " 
+				      << static_cast<int>(im->at<uchar>(cv::Point(x, y))) << std::endl;
+
+            // 图上显示灰度值
+            cv::circle(*im, cv::Point(x, y), 2, cv::Scalar(0, 0, 255));
+            cv::putText(*im, std::to_string(im->at<uchar>(cv::Point(x, y))), cv::Point(x, y), 
+                        cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
 			break;
 
 		case cv::EVENT_RBUTTONDOWN:
-			std::cout<<"input(x,y)"<<std::endl;
-			std::cout<<"x ="<<std::endl;
-			std::cin>>x;
-			std::cout<<"y ="<<std::endl;
-			std::cin>>y;
-			std::cout<<"at("<<x<<","<<y<<")value is:"
-				<<static_cast<int>(im->at<uchar>(cv::Point(x,y)))<<std::endl;
-			break;			
+			std::cout << "input(x,y)" <<std::endl;
+			std::cout << "x = " << std::endl;
+			std::cin >> x;
+			std::cout << "y = " <<std::endl;
+			std::cin >> y;
+			std::cout << "Img at(" << x << "," << y << ") value is: "
+				      << static_cast<int>(im->at<uchar>(cv::Point(x,y))) << std::endl;
+			break;
+
+        default:
+            break;			
 	}
 }
 
+// 点击显示像素点的灰度值
+void imgGrayVisualize(const cv::Mat grayImg)
+{
+    cv::Mat bgrImgShow;
+    cv::cvtColor(grayImg, bgrImgShow, cv::COLOR_GRAY2BGR);  // gray to BGR
+    cv::namedWindow("grayimg");        
+    cv::setMouseCallback("grayimg", onMouse, reinterpret_cast<void*>(&bgrImgShow));   // 注册回调函数 
+    while (true)
+    {
+        cv::imshow("grayimg", bgrImgShow);
+        int key = cv::waitKey(30);
+        if (key == 'q')
+        {
+            break;
+        }
+    }
+}
 
 
 int main()
 {
-    
-    
     // 批量读取文件
     std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_img";
 
@@ -431,10 +454,9 @@ int main()
             cv::Mat srcimg = cv::imread(imgPath);
             cv::Mat grayimg;
             cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
-            cv::imshow("grayimg", grayimg);
-            cv::setMouseCallback("grayimg", onMouse);   // , reinterpret_cast<void*> (&image)
-            cv::waitKey(0);
 
+            imgGrayVisualize(grayimg);     // 点击显示像素点灰度值
+            
             cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);
             
             // houghCircles(grayimg);                      // 圆形检测
