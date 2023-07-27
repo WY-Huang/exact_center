@@ -373,6 +373,25 @@ void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
             }
         }
     }
+
+    // 计算灰度重心
+    int laserWidth = 15;
+    for (int pointX = 0; pointX < contourIndex.size(); pointX++)
+    {
+        float sum_valuecoor = 0;
+        float sum_value = 0;
+        for (int k = 0; k < laserWidth; k++) 
+        {
+            int indexPos = contourIndex[pointX].y + k;
+            sum_valuecoor += imgIn.at<uchar>(indexPos, contourIndex[pointX].x) * indexPos;
+            sum_value += imgIn.at<uchar>(indexPos, contourIndex[pointX].x);
+        }
+        float y_centroid = sum_valuecoor / sum_value;
+
+        circle(plotImg, cv::Point2f(contourIndex[pointX].x, y_centroid), 1, Scalar(0, 255, 0), 1, 8, 0);
+    }
+
+
 	// cv::imshow("ImageContoursFilled", ImageContours);
 	cv::imshow("Contours", ImgContours);
     cv::imshow("plotImg", plotImg);
