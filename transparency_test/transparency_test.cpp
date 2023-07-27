@@ -462,6 +462,7 @@ int main()
             // ed.cannyProcess(240, 255);
             ed.thresholdSeg(250, 255);
             ed.getContours();
+            ed.findTargetPairPoint();
             // cv::Mat thresholdSegImg;                                        // 普通阈值分割
             // cv::threshold(grayimg, thresholdSegImg, 250, 255, cv::THRESH_TOZERO);
             // cv::imshow("thresholdSegImg", thresholdSegImg);

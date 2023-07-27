@@ -75,16 +75,16 @@ bool EdgeDetection::getContours()
             if (rectWidth > 15 && rectWidth < 35 && rectHigth > 30 && rectHigth < 60)
             {
                 candidatePairPoint.push_back(rectCenter);
-                // 绘制旋转矩形与中心位置
-                std::cout << rectWidth << ' ' << rectHigth << ' ' << rectAngle << std::endl;
-                for (int i = 0; i < 4; i++) 
-                {
-                    line(bgr_img, pts[i % 4], pts[(i + 1) % 4], Scalar(0, 0, 255), 1, 8, 0);
-                }
-                Point2f cpt = rrt.center;
-                circle(bgr_img, cpt, 2, Scalar(255, 0, 0), 1, 8, 0);
-                cv::putText(bgr_img, std::to_string(i), pts[0], 
-                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
+                // // 绘制旋转矩形与中心位置
+                // std::cout << rectWidth << ' ' << rectHigth << ' ' << rectAngle << std::endl;
+                // for (int i = 0; i < 4; i++) 
+                // {
+                //     line(bgr_img, pts[i % 4], pts[(i + 1) % 4], Scalar(0, 0, 255), 1, 8, 0);
+                // }
+                // Point2f cpt = rrt.center;
+                // circle(bgr_img, cpt, 2, Scalar(255, 0, 0), 1, 8, 0);
+                // cv::putText(bgr_img, std::to_string(i), pts[0], 
+                //             cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
             }
         }
 
@@ -93,22 +93,22 @@ bool EdgeDetection::getContours()
             if (rectHigth > 15 && rectHigth < 35 && rectWidth > 30 && rectWidth < 60)
             {
                 candidatePairPoint.push_back(rectCenter);
-                // 绘制旋转矩形与中心位置
-                std::cout << rectWidth << ' ' << rectHigth << ' ' << rectAngle << std::endl;
-                for (int i = 0; i < 4; i++) 
-                {
-                    line(bgr_img, pts[i % 4], pts[(i + 1) % 4], Scalar(0, 0, 255), 1, 8, 0);
-                }
-                Point2f cpt = rrt.center;
-                circle(bgr_img, cpt, 2, Scalar(255, 0, 0), 1, 8, 0);
-                cv::putText(bgr_img, std::to_string(i), pts[0], 
-                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
+                // // 绘制旋转矩形与中心位置
+                // std::cout << rectWidth << ' ' << rectHigth << ' ' << rectAngle << std::endl;
+                // for (int i = 0; i < 4; i++) 
+                // {
+                //     line(bgr_img, pts[i % 4], pts[(i + 1) % 4], Scalar(0, 0, 255), 1, 8, 0);
+                // }
+                // Point2f cpt = rrt.center;
+                // circle(bgr_img, cpt, 2, Scalar(255, 0, 0), 1, 8, 0);
+                // cv::putText(bgr_img, std::to_string(i), pts[0], 
+                //             cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
             }
         }
     }
 
-    imshow("contours", bgr_img);
-    waitKey(0);
+    // imshow("contours", bgr_img);
+    // waitKey(0);
     return ret;
 }
 
@@ -122,9 +122,21 @@ bool EdgeDetection::findTargetPairPoint()
     }
     else if (candidatePairPoint.size() == 2)
     {
-        if (candidatePairPoint[0].y - candidatePairPoint[1].y < 10)
+        if (abs(candidatePairPoint[0].y - candidatePairPoint[1].y) < 20)
         {
-            std::cout << "find targetPairPoint = 2 !" << std::endl;
+            if (candidatePairPoint[0].x - candidatePairPoint[1].x < 0)
+            {
+                targetCenter.push_back(candidatePairPoint[0]);
+                targetCenter.push_back(candidatePairPoint[1]);
+            }
+            else
+            {
+                targetCenter.push_back(candidatePairPoint[1]);
+                targetCenter.push_back(candidatePairPoint[0]);
+            }
+            
+            std::cout << "find targetPairPoint !" << std::endl;
+            // std::cout << "targetCenter: " << candidatePairPoint << std::endl;
         }
         else
         {
@@ -134,8 +146,60 @@ bool EdgeDetection::findTargetPairPoint()
     }
     else if (candidatePairPoint.size() > 2)
     {
-        
+        float candidatePointY;
+        for (int i = 0; i < candidatePairPoint.size(); i++)
+        {
+            // float candidatePointY = candidatePairPoint[i].y;
+            for (int j = i+1; j < candidatePairPoint.size(); j++)
+            {
+                float diff = candidatePairPoint[j].y - candidatePairPoint[i].y;
+                if (abs(diff) < 20)
+                {
+                    if (targetCenter.size() < 2)
+                    {
+                        targetCenter.push_back(candidatePairPoint[i]);
+                        targetCenter.push_back(candidatePairPoint[j]);
+                        std::cout << "find targetPairPoint !" << std::endl;
+                    }
+                    else if (candidatePairPoint[i].y < targetCenter[0].y)
+                    {
+                        if (candidatePairPoint[i].x < candidatePairPoint[j].x)
+                        {
+                            targetCenter[0] = candidatePairPoint[i];
+                            targetCenter[1] = candidatePairPoint[j];
+                        }
+                        else
+                        {
+                            targetCenter[0] = candidatePairPoint[j];
+                            targetCenter[1] = candidatePairPoint[i];
+                        }
+
+                    }
+                    
+                }
+            }
+        }
     }
+
+    std::cout << "targetCenter: " << targetCenter << std::endl;
+    if (targetCenter.size() > 0)
+    {
+        Point2f rectPts[4];
+        rectPts[0] = cv::Point2f(targetCenter[0].x + 50, targetCenter[1].y);
+        rectPts[1] = cv::Point2f(targetCenter[1].x - 50, targetCenter[1].y);
+        rectPts[2] = cv::Point2f(targetCenter[1].x - 50, targetCenter[1].y + 200);
+        rectPts[3] = cv::Point2f(targetCenter[0].x + 50, targetCenter[0].y + 200);
+        for (int i = 0; i < 4; i++) 
+        {
+            line(bgr_img, rectPts[i % 4], rectPts[(i + 1) % 4], Scalar(0, 0, 255), 1, 8, 0);
+        }
+        circle(bgr_img, targetCenter[0], 2, Scalar(255, 0, 0), 3, 8, 0);
+        circle(bgr_img, targetCenter[1], 2, Scalar(255, 0, 0), 3, 8, 0);
+        imshow("targetCenter", bgr_img);
+        waitKey(0);
+    }
+
+    return ret;
 }
 
 EdgeDetection::~EdgeDetection()
