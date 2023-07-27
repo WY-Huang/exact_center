@@ -200,6 +200,12 @@ bool EdgeDetection::findTargetPairPoint()
     }
 
     return ret;
+
+}
+
+vector<Point2f> EdgeDetection::getTagetPoints()
+{
+    return targetCenter;
 }
 
 EdgeDetection::~EdgeDetection()

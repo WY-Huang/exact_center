@@ -21,6 +21,7 @@ public:
     bool thresholdSeg(unsigned int downThreshold, unsigned int upThreshold);
     bool getContours();
     bool findTargetPairPoint();
+    vector<Point2f> getTagetPoints();
 
     ~EdgeDetection();
 };

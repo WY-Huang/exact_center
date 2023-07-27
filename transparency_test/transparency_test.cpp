@@ -286,7 +286,7 @@ void sobelEdge(cv::Mat grayimg)
 }
 
 // ROI, 定义ROI区域的位置和大小
-void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height)
+void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height, string savePath="")
 {
     // 创建ROI区域的矩形
     cv::Rect roiRect(x, y, width, height);
@@ -297,7 +297,11 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
     // 显示原始图像和ROI区域
     cv::imshow("Original Image", imgIn);
     cv::imshow("ROI", roi);
-    // cv::imwrite("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roiLog.bmp", roi);
+    if (savePath.empty() == false)
+    {
+        cv::imwrite(savePath, roi);
+    }
+    
     cv::waitKey(0);
 }
 
@@ -309,11 +313,11 @@ void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int h
 void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 {
     cv::threshold(imgIn, imgOut, 5, 255, cv::THRESH_BINARY);
-	cv::imshow("binary", imgOut);   
+	// cv::imshow("binary", imgOut);   
 
 	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));   //针对高亮部分腐蚀
 	cv::erode(imgOut, imgOut, element);
-	cv::imshow("erode", imgOut);
+	// cv::imshow("erode", imgOut);
  
 	// 提取连通区域，并剔除小面积联通区域
 	std::vector<std::vector<cv::Point>> contours;           //二值图像轮廓的容器
@@ -353,8 +357,25 @@ void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize)
 		cv::drawContours(ImageContours, contours, i, cv::Scalar(255), -1, 8);   // 填充轮廓内部
 	}
 
-	cv::imshow("ImageContoursFilled", ImageContours);
+    // 提取目标轮廓线
+    vector<Point2f> contourIndex;
+    cv::Mat plotImg;
+    cv::cvtColor(imgIn, plotImg, cv::COLOR_GRAY2BGR);
+    for (int i = 0; i < ImgContours.cols; i++)
+    {
+        for (int j = 0; j < ImgContours.rows; j++)
+        {
+            if(ImgContours.at<uchar>(j, i) == 255)
+            {
+                contourIndex.push_back(cv::Point2f(i, j));
+                circle(plotImg, cv::Point2f(i, j), 1, Scalar(0, 0, 255), 1, 8, 0);
+                break;
+            }
+        }
+    }
+	// cv::imshow("ImageContoursFilled", ImageContours);
 	cv::imshow("Contours", ImgContours);
+    cv::imshow("plotImg", plotImg);
 	cv::waitKey(0);
 }
 
@@ -429,7 +450,7 @@ void imgGrayVisualize(const cv::Mat grayImg)
 int main()
 {
     // 批量读取文件
-    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_location";
+    std::string folderPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_location/ROI";
 
     fs::path directory(folderPath);
 
@@ -455,14 +476,29 @@ int main()
             cv::Mat srcimg = cv::imread(imgPath);
             cv::Mat grayimg;
             cv::cvtColor(srcimg, grayimg, cv::COLOR_BGR2GRAY);
+            cv::imshow("grayimg", grayimg);
 
-            cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);          // 高斯模糊处理
+            // cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);          // 高斯模糊处理
 
-            EdgeDetection ed(grayimg);                                      // 边缘检测，最小外接矩形
-            // ed.cannyProcess(240, 255);
-            ed.thresholdSeg(250, 255);
-            ed.getContours();
-            ed.findTargetPairPoint();
+
+            // EdgeDetection ed(grayimg);                                      // 边缘检测，最小外接矩形
+            // // ed.cannyProcess(240, 255);
+            // ed.thresholdSeg(250, 255);
+            // ed.getContours();
+            // ed.findTargetPairPoint();
+            // std::vector<cv::Point2f> targetPoint;                            // 寻找目标点对
+            // targetPoint = ed.getTagetPoints();
+
+
+            // cv::Mat grayRoi;                                             // ROI处理
+            // string savePath = imgPath.substr(0, imgPath.rfind(".")) + "_ROI_.bmp";
+            // int roiX = targetPoint[0].x + 50;
+            // int roiY = targetPoint[0].y;
+            // int roiWidth = targetPoint[1].x - targetPoint[0].x - 100;
+            // int roiHeight = 200;
+            // imgRoi(grayimg, grayRoi, roiX, roiY, roiWidth, roiHeight, savePath);
+
+
             // cv::Mat thresholdSegImg;                                        // 普通阈值分割
             // cv::threshold(grayimg, thresholdSegImg, 250, 255, cv::THRESH_TOZERO);
             // cv::imshow("thresholdSegImg", thresholdSegImg);
@@ -474,18 +510,17 @@ int main()
 
             // sobelEdge(grayimg);                                          // sobel边缘检测
 
-            // cv::Mat counterGrayImg;
-            // grayTransform(grayimg, counterGrayImg, 2);                   // 灰度变换
+            cv::Mat counterGrayImg;
+            grayTransform(grayimg, counterGrayImg, 2);                   // 灰度变换
 
             // cv::Mat cannyImg;
             // cv::Canny(counterGrayImg, cannyImg, 5, 100);                 // canny边缘检测
             // cv::imshow("cannyImg", cannyImg);
 
-            // cv::Mat filterImg;
-            // samallAreaRemove(grayimg, filterImg, 5000);                  // 移除小面积斑点
+            cv::Mat filterImg;
+            samallAreaRemove(grayimg, filterImg, 5000);                  // 移除小面积斑点
 
-            // cv::Mat grayRoi;                                             // ROI处理
-            // imgRoi(counterGrayImg, grayRoi, 50, 50, 1200, 500);
+
 
             // cv::Mat rotatedImage;                                        // 旋转图像
             // cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
