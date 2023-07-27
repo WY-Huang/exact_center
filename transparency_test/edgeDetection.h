@@ -12,12 +12,15 @@ class EdgeDetection
     cv::Mat bgr_img;
     cv::Mat m_canny;
     // cv::Mat thresholdSegImg;
+    vector<Point2f> candidatePairPoint;
+    vector<Point2f> targetCenter;
 
 public:
     EdgeDetection(cv::Mat image);
     bool cannyProcess(unsigned int downThreshold, unsigned int upThreshold);
     bool thresholdSeg(unsigned int downThreshold, unsigned int upThreshold);
     bool getContours();
+    bool findTargetPairPoint();
 
     ~EdgeDetection();
 };
