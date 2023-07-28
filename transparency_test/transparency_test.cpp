@@ -260,7 +260,7 @@ void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode)
             break;
     }
 
-	cv::imshow("imgOut", imgOut);  //显示图像
+	cv::imshow("grayTransform", imgOut);  //显示图像
     // cv::waitKey(0);
 }
 

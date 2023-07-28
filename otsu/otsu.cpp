@@ -41,7 +41,7 @@ int getOTSUthread(Mat& src)
 	for (int i = 1; i <= 255; ++i)
 	{
 		u1 = u2 = w1 = w2 = 0; // 均值，比例初始化
-		cnt1 = 0;cnt2 = 0;
+		cnt1 = 0; cnt2 = 0;
 		int wt1 = 0, wt2 = 0;// weight初始化
 
 		for (int j = 0; j <i; ++j)
@@ -57,6 +57,8 @@ int getOTSUthread(Mat& src)
 			cnt2 += NoArry[j];
 			wt2 += j*NoArry[j];
 		}
+		if (cnt2 == 0 || sum == 0)
+			continue;
 		u2 = wt2 / cnt2;
 		w2 = cnt2*1.0 / sum;
 
@@ -236,7 +238,8 @@ int myOtsu(Mat & src)
 
 int main()
 {  
-  cv::Mat Src= cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test4.bmp",1);
+  cv::Mat Src = cv::imread("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_location/ROI/2023_07_20_15_27_48_643_ROI_.bmp", 1);
+
   if(!Src.data){
         printf("fail to open the image!\n");
         return -1;
@@ -273,6 +276,23 @@ int main()
   "\tmyOtsu costs:" << double(otsu3 - otsu2) / 1000000 << "ms" << std::endl;
 
   // lines.imshow();
-  return 0;
+	cv::imshow("Src", Src);
+	
+	cv::Mat thd_otsu1_img;
+	cv::threshold(Src, thd_otsu1_img, thd_otsu1, 255, cv::THRESH_TOZERO_INV);
+	cv::imshow("thd_otsu1_img", thd_otsu1_img);
+
+	cv::Mat thd_otsu2_img;
+	cv::threshold(Src, thd_otsu2_img, thd_otsu2, 255, cv::THRESH_TOZERO_INV);
+	cv::imshow("thd_otsu2_img", thd_otsu2_img);
+
+	cv::Mat thd_otsu3_img;
+	cv::threshold(Src, thd_otsu3_img, thd_otsu3, 255, cv::THRESH_TOZERO_INV);
+	cv::imshow("thd_otsu3_img", thd_otsu3_img);
+	// cv::imwrite("/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_20230720_location/ROI/2023_07_20_15_27_48_643_ROI_ostu.bmp", thd_otsu3_img);
+
+	cv::waitKey(0);
+
+  	return 0;
 
 }
