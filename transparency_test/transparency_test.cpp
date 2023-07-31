@@ -508,6 +508,7 @@ int main()
             // std::vector<cv::Point2f> targetPoint;                            // 寻找目标点对
             // targetPoint = ed.getTagetPoints();
 
+
             /* ==================== 根据定位点对进行ROI处理 ===================== */
             // cv::Mat grayRoi;                                             // ROI处理
             // string savePath = imgPath.substr(0, imgPath.rfind(".")) + "_ROI_.bmp";
@@ -529,7 +530,7 @@ int main()
 
             // sobelEdge(grayimg);                                          // sobel边缘检测
 
-            /* ============= 灰度变换->小轮廓移除->提取轮廓中心线 ============ */
+            /* ============= 灰度变换->小轮廓移除->灰度质心法提取轮廓中心线 ============ */
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);                   // 灰度变换
 
@@ -544,6 +545,7 @@ int main()
             // cv::Mat rotatedImage;                                        // 旋转图像
             // cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
 
+            /* ============== 算法耗时分析 ========================== */
             // 20-30ms
             clock_t begin, end;
             begin = clock();
