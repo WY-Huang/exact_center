@@ -499,8 +499,8 @@ int main()
 
             // cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);          // 高斯模糊处理
 
-
-            // EdgeDetection ed(grayimg);                                      // 边缘检测，最小外接矩形
+            /* ==================== 匹配杯壁上的定位点对 ======================== */
+            // EdgeDetection ed(grayimg);                                       // 边缘检测，最小外接矩形
             // // ed.cannyProcess(240, 255);
             // ed.thresholdSeg(250, 255);
             // ed.getContours();
@@ -508,7 +508,7 @@ int main()
             // std::vector<cv::Point2f> targetPoint;                            // 寻找目标点对
             // targetPoint = ed.getTagetPoints();
 
-
+            /* ==================== 根据定位点对进行ROI处理 ===================== */
             // cv::Mat grayRoi;                                             // ROI处理
             // string savePath = imgPath.substr(0, imgPath.rfind(".")) + "_ROI_.bmp";
             // int roiX = targetPoint[0].x + 50;
@@ -529,6 +529,7 @@ int main()
 
             // sobelEdge(grayimg);                                          // sobel边缘检测
 
+            /* ============= 灰度变换->小轮廓移除->提取轮廓中心线 ============ */
             cv::Mat counterGrayImg;
             grayTransform(grayimg, counterGrayImg, 2);                   // 灰度变换
 
@@ -537,8 +538,7 @@ int main()
             // cv::imshow("cannyImg", cannyImg);
 
             cv::Mat filterImg;
-            samallAreaRemove(grayimg, filterImg, 5000);                  // 移除小面积斑点
-
+            samallAreaRemove(grayimg, filterImg, 5000);                  // 移除小面积斑点，提取轮廓线
 
 
             // cv::Mat rotatedImage;                                        // 旋转图像

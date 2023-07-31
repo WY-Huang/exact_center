@@ -180,6 +180,9 @@ bool EdgeDetection::findTargetPairPoint()
             }
         }
     }
+    // lambda表达式用于排序
+    std::sort(targetCenter.begin(), targetCenter.end(), 
+              [](const Point2f& a, const Point2f& b){return a.x < b.x;});
 
     std::cout << "targetCenter: " << targetCenter << std::endl;
     if (targetCenter.size() > 0)
@@ -207,6 +210,7 @@ vector<Point2f> EdgeDetection::getTagetPoints()
 {
     return targetCenter;
 }
+
 
 EdgeDetection::~EdgeDetection()
 {
