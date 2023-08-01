@@ -38,7 +38,7 @@ void show_cluster_img(vector<vector<samp_point>> Clusters, cv::Mat &img, int row
         int r = randomInt(0, 255);
         int b = randomInt(0, 255);
         int g = randomInt(0, 255);
-        std::cout << "color: " << "r=" << r << " b=" << b << " g=" << g << std::endl;
+        std::cout << "color: " << "r=" << r << "\tb=" << b << "\tg=" << g << std::endl;
         for(int j = 0; j < Clusters[i].size(); j++)
         {
             int x = (int)Clusters[i][j].x;
@@ -161,7 +161,7 @@ vector<vector<samp_point>> Dbscan(vector<samp_point> &p, float Eps, int MinPts)
         }
       }
       Clusters.push_back(C);    //将新建的簇加入簇集合中
-      printf("Clusters.size()=%zu\n", Clusters.size());
+      printf("Clusters.size() = %zu\n", Clusters.size());
     }
  
   }
