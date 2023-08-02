@@ -24,7 +24,7 @@ void makePhaseShiftPatterns(double A, double B, int T, int N, int W, int H,
         for (int wi = 0; wi < W; wi++)
         {
             xs.at<double>(0, wi) = A + B * std::cos(f_2pi * (wi + 1) + phaseShiftK);
-            double temp = A + B * std::cos(f_2pi * (wi + 1) + phaseShiftK);
+            // double temp = A + B * std::cos(f_2pi * (wi + 1) + phaseShiftK);
         }
 
         Is_img[k] = cv::repeat(xs, H, 1);
