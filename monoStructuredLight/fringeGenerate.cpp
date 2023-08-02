@@ -1,5 +1,6 @@
 /*
 相移条纹生成（20230801）
+问题：1.相移法能测动态物体？
 */
 
 #include <iostream>
@@ -9,9 +10,8 @@
 
 
 void makePhaseShiftPatterns(double A, double B, int T, int N, int W, int H, 
-                            std::vector<cv::Mat>& Is, std::vector<cv::Mat>& Is_img) 
+                            std::vector<cv::Mat>& Is_img) 
 {
-    Is.resize(N);
     Is_img.resize(N);
 
     cv::Mat xs(1, W, CV_64F);
@@ -27,7 +27,6 @@ void makePhaseShiftPatterns(double A, double B, int T, int N, int W, int H,
             double temp = A + B * std::cos(f_2pi * (wi + 1) + phaseShiftK);
         }
 
-        Is[k] = xs;
         Is_img[k] = cv::repeat(xs, H, 1);
     }
 }
@@ -49,17 +48,12 @@ int main()
     std::string save_folder = "data/ideaPhase"; 
     // cv::utils::fs::createDirectories(save_folder);
 
-    std::vector<cv::Mat> Is_T1;
     std::vector<cv::Mat> Is_T1_img;
-    makePhaseShiftPatterns(A, B, T1, N, W, H, Is_T1, Is_T1_img);
-
-    std::vector<cv::Mat> Is_T2;
+    makePhaseShiftPatterns(A, B, T1, N, W, H, Is_T1_img);
     std::vector<cv::Mat> Is_T2_img;
-    makePhaseShiftPatterns(A, B, T2, N, W, H, Is_T2, Is_T2_img);
-
-    std::vector<cv::Mat> Is_T3;
+    makePhaseShiftPatterns(A, B, T2, N, W, H, Is_T2_img);
     std::vector<cv::Mat> Is_T3_img;
-    makePhaseShiftPatterns(A, B, T3, N, W, H, Is_T3, Is_T3_img);
+    makePhaseShiftPatterns(A, B, T3, N, W, H, Is_T3_img);
 
     int idxN = 0;
     for (const auto& imgs : {Is_T1_img, Is_T2_img, Is_T3_img}) 
