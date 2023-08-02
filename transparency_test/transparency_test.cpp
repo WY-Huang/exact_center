@@ -1,25 +1,13 @@
 /*
-透明反射物体中心线提取（start:20230620; last:20230724）
+透明物体线激光轮廓定位及中心线提取（20230620 -> 20230802）
 */
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/plot.hpp>
 #include <boost/filesystem.hpp>
 
+#include "transparency_test.hpp"
 #include "edgeDetection.h"
 
 namespace fs = boost::filesystem;
-
-float erodeDilate(cv::Mat image, uchar* row_ptr);                                       // 开运算/闭运算提取特征峰
-void plotGrayCurve(cv::Mat img);                                                        // 绘制图像一行的灰度值分布
-void grayTransform(const cv::Mat &imgIn, cv::Mat &imgOut, int transformMode);           // 灰度变换
-void sobelEdge(cv::Mat grayimg);                                                        // sobel算子
-void imgRoi(const cv::Mat imgIn, cv::Mat &imgOut, int x, int y, int width, int height); // 图像ROI
-void samallAreaRemove(const cv::Mat imgIn, cv::Mat &imgOut, int areaSize);              // 小面积轮廓去除
-void houghCircles(const cv::Mat &grayImg);                                              // 霍夫圆检测
-void onMouse(int event, int x, int y, int flags, void* param);                          // 鼠标事件的回调函数签名
-void imgGrayVisualize(const cv::Mat grayImg);                                           // 点击显示像素点的灰度值
-
 
 // 开运算/闭运算提取特征峰
 float erodeDilate(cv::Mat image, uchar* row_ptr)
@@ -500,17 +488,17 @@ int main()
             // cv::GaussianBlur(grayimg, grayimg, cv::Size(3, 3), 0);          // 高斯模糊处理
 
             /* ==================== 匹配杯壁上的定位点对 ======================== */
-            // EdgeDetection ed(grayimg);                                       // 边缘检测，最小外接矩形
+            // EdgeDetection ed(grayimg);                                      // 边缘检测，最小外接矩形
             // // ed.cannyProcess(240, 255);
             // ed.thresholdSeg(250, 255);
             // ed.getContours();
             // ed.findTargetPairPoint();
-            // std::vector<cv::Point2f> targetPoint;                            // 寻找目标点对
+            // std::vector<cv::Point2f> targetPoint;                           // 寻找目标点对
             // targetPoint = ed.getTagetPoints();
 
 
             /* ==================== 根据定位点对进行ROI处理 ===================== */
-            // cv::Mat grayRoi;                                             // ROI处理
+            // cv::Mat grayRoi;                                                // ROI处理
             // string savePath = imgPath.substr(0, imgPath.rfind(".")) + "_ROI_.bmp";
             // int roiX = targetPoint[0].x + 50;
             // int roiY = targetPoint[0].y;
@@ -545,7 +533,7 @@ int main()
             // cv::Mat rotatedImage;                                        // 旋转图像
             // cv::rotate(counterGrayImg, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
 
-            /* ============== 算法耗时分析 ========================== */
+            /* ========================== 算法耗时分析 ========================== */
             // 20-30ms
             clock_t begin, end;
             begin = clock();
