@@ -46,7 +46,7 @@ void test_dbscanImg()
 	
 	printf("p.size() = %zu\n", p.size());
 	
-	vector<vector<samp_point>> Clusters = Dbscan(p, 10, 20);
+	vector<vector<samp_point>> Clusters = Dbscan(p, 8, 10);
 	
 	cv::Mat rst;
 	show_cluster_img(Clusters, rst, img.rows, img.cols);  //显示分类结果
