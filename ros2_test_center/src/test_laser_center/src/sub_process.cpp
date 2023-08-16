@@ -15,18 +15,18 @@ ros2 run test_laser_center sub_process
 
 LaserCenter::LaserCenter() : Node("sub_images")
 {
-	subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
+	subscription_ = this->create_subscription<tutorial_interfaces::msg::IfAlgorhmitimage>(
         "camera_tis_node/image", rclcpp::SensorDataQoS(), std::bind(&LaserCenter::topic_callback, this, _1)
     );
 
 	save = 1;
 }
 
-void LaserCenter::topic_callback(const sensor_msgs::msg::Image msg)
+void LaserCenter::topic_callback(const tutorial_interfaces::msg::IfAlgorhmitimage msg)
 {
     
     cv_bridge::CvImagePtr cv_ptr;
-    cv_ptr = cv_bridge::toCvCopy(msg, msg.encoding);
+    cv_ptr = cv_bridge::toCvCopy(msg.image, msg.image.encoding);
 
     cvImage = cv_ptr->image.clone();
     // RCLCPP_INFO(this->get_logger(), "receive images...");

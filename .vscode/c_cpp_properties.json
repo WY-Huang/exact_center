@@ -10,7 +10,8 @@
                 "/usr/include/opencv4",
                 // "/home/wanyel/TPSoftware/vcpkg/installed/x64-linux/include",
                 // "/usr/include/python3.8",
-                "/usr/include/boost"
+                "/usr/include/boost",
+                "/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/include"   // 自定义ros2接口
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

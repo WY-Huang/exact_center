@@ -1,6 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include <sensor_msgs/msg/image.hpp>
+// #include <sensor_msgs/msg/image.hpp>
+#include <tutorial_interfaces/msg/if_algorhmitimage.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <vector>
@@ -26,10 +27,10 @@ public:
 
 
 private:
-    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
+    rclcpp::Subscription<tutorial_interfaces::msg::IfAlgorhmitimage>::SharedPtr subscription_;
     Mat cvImage;
 
-    void topic_callback(const sensor_msgs::msg::Image msg);
+    void topic_callback(const tutorial_interfaces::msg::IfAlgorhmitimage msg);
 
     // 抓取图片
     void grap_images(Mat & img);

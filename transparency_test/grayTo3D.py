@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import cv2
 
-imgPath = "/home/wanyel/vs_code/exact_center/transparency_test/test_img/NBU_sample_20230714/blue_inclined_50000/roi.bmp"
+imgPath = "/home/wanyel/QT_work/00_Build/build-Laser-Scanning-Qt_5_14_2_gcc_64-Debug/USER_DATA/2023_08_12_16_02_41_181.tiff"
 gray_image = cv2.imread(imgPath, cv2.IMREAD_GRAYSCALE)
 # 创建一个灰度图数据
 # gray_image = np.array([[0, 64, 128, 192, 255],
