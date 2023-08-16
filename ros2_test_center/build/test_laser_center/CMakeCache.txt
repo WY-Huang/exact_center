@@ -275,7 +275,7 @@ SITE:STRING=wanyel-VB
 TinyXML2_DIR:PATH=TinyXML2_DIR-NOTFOUND
 
 //Path to a library.
-_lib:FILEPATH=/opt/ros/galactic/lib/libcv_bridge.so
+_lib:FILEPATH=/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/lib/libtutorial_interfaces__rosidl_typesupport_fastrtps_cpp.so
 
 //The directory containing a CMake configuration file for ament_cmake.
 ament_cmake_DIR:PATH=/opt/ros/galactic/share/ament_cmake/cmake
@@ -513,6 +513,9 @@ test_laser_center_SOURCE_DIR:STATIC=/home/wanyel/vs_code/exact_center/ros2_test_
 
 //The directory containing a CMake configuration file for tracetools.
 tracetools_DIR:PATH=/opt/ros/galactic/share/tracetools/cmake
+
+//The directory containing a CMake configuration file for tutorial_interfaces.
+tutorial_interfaces_DIR:PATH=/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/share/tutorial_interfaces/cmake
 
 //Path to a program.
 xmllint_BIN:FILEPATH=/usr/bin/xmllint

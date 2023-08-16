@@ -1,3 +1,6 @@
+source;share/test_laser_center/hook/cmake_prefix_path.ps1
+source;share/test_laser_center/hook/cmake_prefix_path.dsv
+source;share/test_laser_center/hook/cmake_prefix_path.sh
 source;share/test_laser_center/local_setup.bash
 source;share/test_laser_center/local_setup.dsv
 source;share/test_laser_center/local_setup.ps1

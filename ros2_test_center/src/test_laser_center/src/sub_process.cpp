@@ -33,13 +33,11 @@ void LaserCenter::topic_callback(const tutorial_interfaces::msg::IfAlgorhmitimag
 
     cv::Mat rotatedImage;
     cv::rotate(cvImage, rotatedImage, cv::ROTATE_90_COUNTERCLOCKWISE);
-	// imshow("srcimg", rotatedImage);
+	// imshow("srcimg", cvImage);
     // waitKey(5);
 	// if (num_img < 300)
 	// 	grap_images(cvImage);
     
-    // gray_centroid(cvImage);
-
     // thining_gray_centroid(cvImage);
 
 	std::vector <cv::Point2f> pointcloud0;
@@ -50,7 +48,9 @@ void LaserCenter::topic_callback(const tutorial_interfaces::msg::IfAlgorhmitimag
     clock_t begin, end;
     begin = clock();
 
-    alg103_runimage(rotatedImage, pointcloud0, namepoint0, solderjoints0, 1);
+    gray_centroid(rotatedImage);
+
+    // alg103_runimage(rotatedImage, pointcloud0, namepoint0, solderjoints0, 1);
 
     end = clock();
     std::cout << "alg103runimage costs:" << double(end - begin) / 1000 << "ms" << std::endl;
@@ -64,14 +64,14 @@ void LaserCenter::topic_callback(const tutorial_interfaces::msg::IfAlgorhmitimag
     // cv::rotate(rotatedImage, rotatedImage2, cv::ROTATE_90_COUNTERCLOCKWISE);
 	// std::cout << rotatedImage2.size() << std::endl;
 	// cv::Mat rotatedImages = rotatedImage.clone();
-	if (save < 10)
+	if (save == 10)
 	{
 		cv::imwrite(std::to_string(save) + "alg103_test.jpg", rotatedImage);
 		save++;
 	}
 
 	// cv::namedWindow("centerline", cv::WINDOW_NORMAL);  // 创建新的图像窗口
-	cv::imshow("centerline", rotatedImage);
+	// cv::imshow("centerline", rotatedImage);
     // cv::waitKey(5);
 	// cv::destroyWindow("centerline");  // 销毁之前的窗口
 	

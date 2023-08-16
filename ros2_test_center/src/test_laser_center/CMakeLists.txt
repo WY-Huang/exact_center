@@ -13,6 +13,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(tutorial_interfaces REQUIRED)
 
 # add_library(${PROJECT_NAME} SHARED src/myhalcv2.cpp)
 
@@ -31,10 +32,13 @@ ament_target_dependencies(sub_process
 	"sensor_msgs"
   "cv_bridge"
 	"OpenCV"
+  "tutorial_interfaces"
 )
 
-include_directories(${OpenCV_INCLUDE_DIR})
-target_link_libraries(sub_process ${OpenCV_LIBS})
+include_directories(${OpenCV_INCLUDE_DIR}
+                    /home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/include)
+target_link_libraries(sub_process ${OpenCV_LIBS}
+                      /home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/lib)
 # target_link_libraries(sub_process   
 #     /usr/local/lib/libopencv_*.so
 # )

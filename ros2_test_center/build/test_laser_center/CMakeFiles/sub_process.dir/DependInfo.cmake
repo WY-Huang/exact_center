@@ -18,6 +18,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/wanyel/vs_code/exact_center/ros2_test_center/src/test_laser_center/include"
+  "/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/include"
   "/opt/ros/galactic/include"
   "/usr/local/include/opencv4"
   )
