@@ -18,7 +18,7 @@
                 "-I","/usr/local/include/vtk-7.1",
                 // "-I", "/home/wanyel/TPSoftware/vcpkg/installed/x64-linux/include",
                 // "-I","/usr/include/python3.8",
-                "/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/include",   // 自定义ros2接口
+                "-I","/home/wanyel/TPSoftware/tutorial_interfaces/install/tutorial_interfaces/include",   // 自定义ros2接口
 
                 /* 项目所需的库文件路径 */
                 "-L", "/usr/local/lib",
