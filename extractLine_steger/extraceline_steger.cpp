@@ -64,7 +64,7 @@ void ExtractLines::ComputeHessian(void)
     {
         for(int y = 0; y < Dst.rows; y++)
         {
-            if(Src.at<uchar>(y,x) > 40)
+            if(Src.at<uchar>(y, x) > 40)
             {
                 cv::Mat Hessian(2, 2, CV_32FC1), Eigenvalue, Eigenvector;
                 Hessian.at<float>(0, 0) = Dxx.at<float>(y, x);
@@ -73,6 +73,7 @@ void ExtractLines::ComputeHessian(void)
                 Hessian.at<float>(1, 1) = Dyy.at<float>(y, x);
 
                 cv::eigen(Hessian, Eigenvalue, Eigenvector);
+
                 double Nx, Ny;
                 if(fabs(Eigenvalue.at<float>(0, 0)) >= fabs(Eigenvalue.at<float>(1, 0)))
                 {
