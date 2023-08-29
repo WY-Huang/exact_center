@@ -5,24 +5,30 @@
 #include <vector>
 #include <string>
 
-class ExtractLines{
+
+class ExtractLines
+{
 private:
-    cv::Mat Src,    //Define Mat to hold source image
-            Img,    //Original image
-            Dst,    //Processed image
-            Dx,     //Partial derivative with respect to x
-            Dy,     //Partial derivative with respect to y
-            Dxx,    //Second derivate with respect to x
-            Dxy,    //Second partial derivative with respect to x and y, Dxy = Dyx
-            Dyy;    //Second derivative with respect to y
+    cv::Mat Src,    // Define Mat to hold source image
+            Img,    // Original image
+            Dst,    // Processed image
+            Dx,     // Partial derivative with respect to x
+            Dy,     // Partial derivative with respect to y
+            Dxx,    // Second derivate with respect to x
+            Dxy,    // Second partial derivative with respect to x and y, Dxy = Dyx
+            Dyy;    // Second derivative with respect to y
     std::vector<cv::Point> *DetectPoints;
     void ComputeDerivative(void);
-    
     void ComputeHessian(void);
+
 public:
     ExtractLines(const cv::Mat& Img);
     void imshow(void) const;
-    inline ~ExtractLines(){delete DetectPoints;}
+
+    inline ~ExtractLines()
+    {
+        delete DetectPoints;
+    }
 };
 
 /**
@@ -30,8 +36,8 @@ public:
  *         Call ComputeHessian() after all the derivative matrixes
  *         has been computed.
 **/
-void ExtractLines::ComputeDerivative(void){
-
+void ExtractLines::ComputeDerivative(void)
+{
     cv::Mat Mask_Dx = (cv::Mat_<float>(3, 1) <<  1,  0 , -1);
     cv::Mat Mask_Dy = (cv::Mat_<float>(1, 3) <<  1,  0 , -1);
     cv::Mat Mask_Dxx = (cv::Mat_<float>(3, 1) << 1, -2 ,  1);
@@ -52,14 +58,15 @@ void ExtractLines::ComputeDerivative(void){
  *         Call ComputeHessian() after all the derivative matrixes
  *         has been computed.
 **/
-void ExtractLines::ComputeHessian(void){
+void ExtractLines::ComputeHessian(void)
+{
     for(int x = 0; x < Dst.cols; x++)
     {
         for(int y = 0; y < Dst.rows; y++)
         {
-            if(Src.at<uchar>(y,x) > 10)
+            if(Src.at<uchar>(y,x) > 40)
             {
-                cv::Mat Hessian(2,2,CV_32FC1),Eigenvalue,Eigenvector;
+                cv::Mat Hessian(2, 2, CV_32FC1), Eigenvalue, Eigenvector;
                 Hessian.at<float>(0, 0) = Dxx.at<float>(y, x);
                 Hessian.at<float>(0, 1) = Dxy.at<float>(y, x);
                 Hessian.at<float>(1, 0) = Dxy.at<float>(y, x);
@@ -98,7 +105,8 @@ void ExtractLines::ComputeHessian(void){
            Throw error if cannot open the image.
    @param  img_name: the input file name.
 **/
-ExtractLines::ExtractLines(const cv::Mat& Input_img){
+ExtractLines::ExtractLines(const cv::Mat& Input_img)
+{
     Src = Input_img.clone();
     Img = Input_img.clone();
     cv::cvtColor(Src, Src, cv::COLOR_BGR2GRAY);    //Convert RGB image to gray space
@@ -111,10 +119,13 @@ ExtractLines::ExtractLines(const cv::Mat& Input_img){
 /**
  * @brief  Draw detected salient points on original image using cv::circle and display the result.
 **/
-void ExtractLines::imshow(void) const{
-    for(unsigned int i = 0; i < (*DetectPoints).size(); i++){
-        cv::circle(Img, (*DetectPoints)[i], 0.3, cv::Scalar(0, 0, 200));
+void ExtractLines::imshow(void) const
+{
+    for(unsigned int i = 0; i < (*DetectPoints).size(); i++)
+    {
+        cv::circle(Img, (*DetectPoints)[i], 0, cv::Scalar(0, 0, 255));
     }
+    std::cout << "Points nums: " << (*DetectPoints).size() << std::endl;
     cv::imshow("result", Img);
     cv::waitKey(0);
 }
@@ -123,7 +134,7 @@ void ExtractLines::imshow(void) const{
 
 int main()
 {  
-    cv::Mat Src= cv::imread("/home/wanyel/vs_code/exact_center/srcImg/bmp/test.bmp",1);
+    cv::Mat Src= cv::imread("/home/wanyel/vs_code/exact_center/allData/srcImg/bmp/test5.bmp", 1);
     if(!Src.data){
         printf("fail to open the image!\n");
         return -1;
