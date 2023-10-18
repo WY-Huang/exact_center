@@ -1,5 +1,5 @@
 /*
-opencv官方的cpu并行处理示例代码，曼德博集-分形，20231018
+opencv官方的cpu并行处理示例代码，曼德博集合-分形图，20231018
 */
 
 
@@ -97,6 +97,7 @@ void sequentialMandelbrot(Mat &img, const float x1, const float y1, const float 
 
 int main()
 {
+
     //! [mandelbrot-transformation]
     Mat mandelbrotImg(4800, 5400, CV_8U);
     float x1 = -2.1f, x2 = 0.6f;
