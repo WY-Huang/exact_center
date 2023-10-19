@@ -124,7 +124,7 @@ int main()
             uchar value = (uchar) mandelbrotFormula(z0);
             mandelbrotImg.ptr<uchar>(i)[j] = value;
         }
-    });
+    }, -1); // 可修改使用的线程数量（-1为自动分配）
     //! [mandelbrot-parallel-call-cxx11]
 
     #else
